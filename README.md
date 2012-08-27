@@ -1,7 +1,7 @@
 jenkins-bell
 ============
 
-JenkinsBell is a script that loops forever and polls jenkins for the configured job states until its killed.
+JenkinsBell is a groovy script that is packaged as a MacOS Application.
 
 The script has multiple ways to announce changes of the build states:
     * Use a text-to-speech tool of the OS, the command can be configured in the config file
@@ -14,24 +14,21 @@ A short log file is created at ~/.jenkins-bell/log
 
 
 how to install:
-    create the  '~/.jenkins-bell' directory in your home folder
-    copy 'config' file in to ~/.jenkins-bell/config
+    on MacOS
+        * install groovy (for example via home brew)
+        * git clone git@github.com:comsysto/jenkins-bell.git /Applications/JenkinsBell.app
+        * double click the application to start
+        * configure the app with SystemTray->Configure Jenkins Bell...
 
-manual start up on *nix and MacOS X:
-    install groovy via package manger
-    change file permissions "chmod ug+x JenkinsBell.groovy"
-    start JenkisBell via "./JenkinsBell.groovy"
-
-install as LaunchAgent on MacOS X:
-    fix path to the JenkinsBell.groovy in the file com.comsysto.JenkinsBell.plist
-    copy com.comsysto.JenkinsBell.plist into ~/Library/LaunchAgent/
-    install the agent, insteed of relogging: "launchctl load ~/Library/LaunchAgent/com.comsysto.JenkinsBell.plist"
-    now check with "jps" if a GroovyStarter process is running
+    on Linux
+        * install groovy (for example via apt-get)
+        * git clone git@github.com:comsysto/jenkins-bell.git
+        * configure the app via $INSTALL_DIR/Contents/Linux/configure.sh
+        * start the app via  $INSTALL_DIR/Contents/Linux/start.sh
+        * stop the app via  $INSTALL_DIR/Contents/Linux/stop.sh
 
 install with geektools
     http://itunes.apple.com/de/app/geektool/id456877552?mt=12
-
-
 
 install as startup item on Ubuntu
     http://www.howtogeek.com/howto/ubuntu/how-to-add-a-program-to-the-ubuntu-startup-list-after-login/
