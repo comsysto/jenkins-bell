@@ -9,7 +9,7 @@
 	<key>CFBundleExecutable</key>
 	<string>run.sh</string>
 	<key>CFBundleIconFile</key>
-	<string>shortcut.icns</string>
+	<string>JenkinsBell.icns</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>1.0</string>
 	<key>CFBundlePackageType</key>

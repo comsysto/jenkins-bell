@@ -1,7 +1,7 @@
 import javax.imageio.ImageIO
 
 Logo logo = new Logo()
-def sizes = [1024, 512, 128, 64]
+def sizes = [512, 256, 128, 32, 16]
 sizes.each{
     logo.setSize(it, it)
     def image = logo.makeImage()
