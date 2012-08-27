@@ -1,4 +1,6 @@
-README:
+jenkins-bell
+============
+
 JenkinsBell is a script that loops forever and polls jenkins for the configured job states until its killed.
 
 The script has multiple ways to announce changes of the build states:
