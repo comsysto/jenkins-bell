@@ -134,7 +134,7 @@ class ConfigModule extends AbstractModule {
         }
 
         frame.requestFocus()
-        agent.doCommand("requestForeground")
+        agent?.doCommand("requestForeground")
 
     }
 
