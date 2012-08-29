@@ -11,10 +11,6 @@ import java.awt.BorderLayout
 import java.awt.Shape
 import java.awt.geom.Area
 import java.awt.image.BufferedImage
-import com.apple.eawt.Application
-import java.awt.Dimension
-import java.awt.font.GlyphVector
-import java.awt.Font
 /**
  * Created with IntelliJ IDEA.
  * User: okrammer
@@ -83,38 +79,4 @@ class Logo extends JComponent{
 
     }
 
-    static void main(String[] args){
-        JFrame frame = new JFrame()
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE)
-        frame.contentPane.layout = new BorderLayout()
-        def logo = new Logo()
-        frame.contentPane.add(logo)
-        frame.setSize(200, 200)
-        frame.setVisible(true)
-
-        int alphaIncrement = 8
-
-
-        Logo dockLogo = new Logo()
-        dockLogo.setFont(frame.getFont())
-        dockLogo.setSize(256, 256)
-
-
-        while(true){
-            Color c = dockLogo.bellColor
-
-            int newAlpha = c.getAlpha() + alphaIncrement
-            if(newAlpha < 0 || newAlpha > 172){
-                alphaIncrement *= -1
-                newAlpha += alphaIncrement
-
-            }
-            dockLogo.bellColor = new Color(c.getRed(), c.getGreen(), c.getBlue(), newAlpha)
-
-            Application.application.setDockIconImage(dockLogo.makeImage())
-            Application.application.requestUserAttention(true)
-            Thread.sleep(100)
-
-        }
-    }
 }
