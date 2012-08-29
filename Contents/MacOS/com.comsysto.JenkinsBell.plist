@@ -9,8 +9,7 @@
 	<false/>
 	<key>ProgramArguments</key>
 	<array>
-		<string>/usr/local/bin/groovy</string>
-		<string>/Users/okrammer/geeklets/JenkinsBell.groovy</string>
+		<string>LOCATION_AGENT</string>
 	</array>
 </dict>
 </plist>

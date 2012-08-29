@@ -24,7 +24,7 @@ class Agent {
         builds = config.buildConfigs.collect {
             def build = new Build(name: it.name, job: it.job, server: it.server)
             def stateFile = files.stateFile(build.fileName)
-            build.lastBuildState = stateFile.exists() ? stateFile.text : null
+            build.lastBuildState = stateFile.exists() ? BuildState.forName(stateFile.text) : null
             build.buildState = build.lastBuildState
             println "$build.name: $build.job @ $build.server -> $build.buildStateWithColor"
             build
@@ -84,7 +84,7 @@ class Agent {
         println "--POLL @ ${new Date()}--"
         build.fetch()
 
-        if (!build.fetchError && build.stateChanged) {
+        if (build.stateChanged) {
             println("STATE CHANGE: $build.name $build.stateDescriptionWithColor")
 
             files.stateFile(build.fileName).text = build.buildState
@@ -93,14 +93,30 @@ class Agent {
 
     }
 
-    public void doCommand(String cmd, Map<String, Object> args){
-        listeners.each {
-            it.onCommand(cmd, args)
+    public List<Object> doCommand(Map<String, Object> args, String cmd, Object... varargs){
+        listeners.collect {
+            it.onCommand(args, cmd, varargs)
         }
     }
 
+    public List<Object> doCommand(String cmd, Object... varargs){
+        doCommand([:], cmd, varargs)
+    }
 
-    boolean isAllBuildsSuccessful() {
-        !builds.any {!it.stateSuccess}
+    public List<Object> doCommand(String cmd){
+        doCommand([:], cmd, [])
+    }
+
+    public List<Object> doCommand(Map<String, Object> args, String cmd){
+        doCommand(args, cmd, [])
+    }
+
+
+    Map<BuildState, Integer> getBuildStateCount() {
+        builds.countBy{it.buildState}
+    }
+
+    BuildState getHighestBuildState(){
+        builds.max{it.buildState}.buildState
     }
 }

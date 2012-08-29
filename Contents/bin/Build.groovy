@@ -12,8 +12,8 @@ class Build {
     String job
     String server
     Throwable fetchError
-    String buildState
-    String lastBuildState
+    BuildState buildState
+    BuildState lastBuildState
     boolean building
     Date date
     List<String> authors
@@ -27,12 +27,14 @@ class Build {
             fetchError = null
         } catch (Exception e) {
             fetchError = e
+            lastBuildState = buildState
+            buildState = BuildState.FETCH_ERROR
             return false
         }
 
         def json = new groovy.json.JsonSlurper().parseText(jsonText)
 
-        def result = json.result
+        def result = BuildState.forName(json.result)
 
         building = json.building
         // fixing state if build drops state to null
@@ -56,8 +58,8 @@ class Build {
         isSuccess(buildState)
     }
 
-    def boolean isSuccess(String state){
-        return state == "SUCCESS"
+    def boolean isSuccess(BuildState state){
+        return state == BuildState.SUCCESS
     }
 
     def String getLastBuildStateWithColor(){

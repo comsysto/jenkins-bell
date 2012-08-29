@@ -1,9 +1,10 @@
-import java.awt.EventQueue
-import java.awt.Color
+//import com.apple.eawt.Application
+import java.awt.PopupMenu
 
-class DockModule extends AbstractModule {
+class DockModule extends AbstractMenuModule {
 
-    Logo logo
+
+//    Application appleApplication
     def appleApplication
 
     DockModule() {
@@ -15,40 +16,45 @@ class DockModule extends AbstractModule {
         }
     }
 
-    private void setupLogo() {
-        if(appleApplication == null) return
-        def allBuildsSuccessful = agent.allBuildsSuccessful
-        Logo myLogo = logo
-        EventQueue.invokeLater {
-            if (!myLogo) return
-            println "--CHANGED DOCK IMAGE--"
-            myLogo.bellColor = allBuildsSuccessful ? null : Color.RED
-            appleApplication.setDockIconImage(myLogo.makeImage())
-            //appleApplication.setDockIconBadge("JenkinsBell")
-            appleApplication.requestUserAttention(true)
+    @Override
+    void setupPollStateInUiThread(Build build) {
+        appleApplication.setDockIconImage(logo.makeImage())
+
+        if(highestBuildState?.exceptional && buildStateCount && buildStateCount > 0){
+            appleApplication.setDockIconBadge(buildStateCount.toString())
         }
+
+        appleApplication.requestUserAttention(true)
     }
 
-    @Override
-    void onBuildChangedState(Build build) {
-        setupLogo()
-    }
 
     @Override
     boolean canBeInstalled(Agent agent) {
-        appleApplication != null
+        appleApplication != null && super.canBeInstalled(agent)
     }
 
     @Override
     void afterInstall() {
+        super.afterInstall()
         System.setProperty("com.apple.mrj.application.apple.menu.about.name", "JenkinsBell");
-        logo = new Logo()
-        logo.setSize(256, 256)
-        setupLogo()
+        PopupMenu popup = new PopupMenu();
+        def items = createMenuItems();
+        items.each {popup.add(it)}
+        appleApplication.setDockMenu(popup)
+        setupState(null)
     }
 
     void afterUninstall(){
-        logo = null
+        super.afterUninstall()
     }
 
+    @Override
+    Object onCommand(Map<String, Object> args, String cmd, Object... varargs) {
+        if(cmd == "requestForeground"){
+            appleApplication.requestForeground(true)
+        } else if(cmd == "requestUserAttention"){
+            appleApplication.requestUserAttention(true)
+        }
+
+    }
 }

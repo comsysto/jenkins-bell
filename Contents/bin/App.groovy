@@ -10,15 +10,16 @@ class App {
     Config config = null
     Map<AbstractModule, Closure> modulesAndShouldInstall = [
             (new LogModule()) : null,
-            (new DockModule()): null,
-            (new TrayModule()) : {-> config.trayEnabled},
+            (new DockModule()): {-> uiEnabled},
+            (new TrayModule()) : {-> uiEnabled && config.trayEnabled},
             (new ReportModule()) : null,
-            (new PopupModule()) : {-> config.popupEnabled},
+            (new PopupModule()) : {-> uiEnabled && config.popupEnabled},
             (new SpeechModule()) : {-> config.speechEnabled},
-            (new ConfigModule(this)) : null
+            (new ConfigModule(this)) : {-> uiEnabled}
     ]
 
     Files files
+    boolean uiEnabled = true
 
     App(Files files) {
         this.files = files

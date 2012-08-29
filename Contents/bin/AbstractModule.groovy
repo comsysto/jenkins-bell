@@ -36,5 +36,6 @@ abstract class AbstractModule extends AgentListener{
     }
 
     void afterUninstall() {
+
     }
 }

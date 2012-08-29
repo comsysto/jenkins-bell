@@ -1,3 +1,5 @@
+#!/usr/bin/env groovy
+
 import javax.imageio.ImageIO
 
 Logo logo = new Logo()

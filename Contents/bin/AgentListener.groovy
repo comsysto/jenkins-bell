@@ -18,6 +18,6 @@ class AgentListener {
 
     }
 
-    void onCommand(String cmd, Map<String, Object> args) {
+    Object onCommand(Map<String, Object> args, String cmd, Object... varargs) {
     }
 }

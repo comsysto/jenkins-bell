@@ -28,7 +28,7 @@ class ConfigModule extends AbstractModule {
     }
 
     @Override
-    void onCommand(String cmd, Map<String, Object> args) {
+    Object onCommand( Map<String, Object> args, String cmd, Object... varargs) {
         if (cmd == "config") {
             EventQueue.invokeLater{
                 openFrame()
@@ -44,6 +44,7 @@ class ConfigModule extends AbstractModule {
         Config config = app.loadConfig()
 
         def closeFrame = {->
+            if(!frame) return
             frame.dispose()
             frame = null
             if(exitOnClose) System.exit(0)
@@ -56,7 +57,7 @@ class ConfigModule extends AbstractModule {
         }
 
         SwingBuilder swing = new SwingBuilder()
-        frame = swing.frame(id: "frame", title: "JenkinsBell - Config", size: [400, 400], show: true) {
+        frame = swing.frame(id: "frame", title: "JenkinsBell - Config", size: [400, 400], show: true, windowClosing: {e -> closeFrame()}) {
             borderLayout()
             panel(constraints: BorderLayout.CENTER) {
                 boxLayout(axis: BoxLayout.PAGE_AXIS)
@@ -131,6 +132,9 @@ class ConfigModule extends AbstractModule {
             }
 
         }
+
+        frame.requestFocus()
+        agent.doCommand("requestForeground")
 
     }
 

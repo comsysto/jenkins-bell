@@ -31,9 +31,7 @@ class Logo extends JComponent{
         return image
     }
 
-    private Color bellColor = new Color(Color.RED.getRed(), Color.RED.getGreen(), Color.RED.getBlue(), 0)
-    private Integer number = null
-    private Color numberColor = Color.RED
+    Color bellColor = new Color(Color.RED.getRed(), Color.RED.getGreen(), Color.RED.getBlue(), 0)
 
     private Area bell(int dx = 0, int dy = 0){
         Arc2D outerArc = new Arc2D.Double()
@@ -50,20 +48,6 @@ class Logo extends JComponent{
         bell
     }
 
-    private Area marker(int size, int dx = 0, int dy = 0){
-        Arc2D cycle = new Arc2D.Double(50 -size, -size, size, size, 0, 360, Arc2D.CHORD)
-        Font f = getFont().deriveFont(Font.BOLD, 70);
-        GlyphVector v = f.createGlyphVector(getFontMetrics(f).getFontRenderContext(), number.toString());
-        Shape s = v.getOutline();
-        def bounds = s.getBounds()
-        AffineTransform transform = AffineTransform.getScaleInstance(15/bounds.width, 15 / bounds.height)
-        transform.translate(15 + size /2, -5  - size/2)
-        Shape stringShape = transform.createTransformedShape(s)
-        Area result = new Area(cycle)
-        result.subtract(new Area(stringShape))
-        result.transform(AffineTransform.getTranslateInstance(dx, dy))
-        result
-    }
 
     private Area bellArea(){
         Arc2D innerArc = new Arc2D.Double()
@@ -91,12 +75,6 @@ class Logo extends JComponent{
             g2.setColor(Color.black)
             g2.fill(bell())
 
-            if (number != null){
-                g2.setColor(Color.white)
-                g2.fill(marker(1, 1))
-                g2.setColor(numberColor)
-                g2.fill(marker(50))
-            }
         }finally{
             g2.dispose()
         }
@@ -120,7 +98,6 @@ class Logo extends JComponent{
         Logo dockLogo = new Logo()
         dockLogo.setFont(frame.getFont())
         dockLogo.setSize(256, 256)
-        dockLogo.number = 5
 
 
         while(true){

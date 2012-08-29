@@ -1,20 +1,24 @@
 jenkins-bell
 ============
 
-JenkinsBell is a groovy script that is packaged as a MacOS Application.
+JenkinsBell is a groovy script to monitor the build result of certain jobs of multiple Jenkins instances.
 
-The script has multiple ways to announce changes of the build states:
-    * Use a text-to-speech tool of the OS, the command can be configured in the config file
-    * Open a swing window
-    * Create report files that can be used in command line scripts or MacOS GeekTools
+There are multiple ways that a change in the state of a job can be announced:
+    * Use a text-to-speech tool to read the name of the job and the build result, The command that is used can be configured dependent on the OS.
+    * Open a message window
+    * Create report files that can be used in command line scripts or MacOS GeekTools.
       This reports are stored in the ~/.jenkins-bell/report folder
 
-The script stores the build state persistent on disk in the ~/.jenkins-bell/state folder.
-A short log file is created at ~/.jenkins-bell/log
+The script creates a hidden directory in your user home folder with the name '.jenkins-bell'.
+This directory has the following layout:
 
+    state: in this directory the last seen state of a job is persisted
+    report: in this directory a report of the current state of a job is located
+    config.xml: this file contains the settings of JenkinsBell
 
 how to install:
     on MacOS
+        * install git (for example via home brew)
         * install groovy (for example via home brew)
         * git clone git@github.com:comsysto/jenkins-bell.git /Applications/JenkinsBell.app
         * double click the application to start

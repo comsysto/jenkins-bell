@@ -1,0 +1,21 @@
+
+/**
+ * Created with IntelliJ IDEA.
+ * User: okrammer
+ * Date: 29/08/2012
+ * Time: 08:20
+ * To change this template use File | Settings | File Templates.
+ */
+enum BuildState {
+
+    SUCCESS, FETCH_ERROR, UNSTABLE, FAILURE;
+
+    boolean isExceptional(){
+        this == SUCCESS
+    }
+
+    static BuildState forName(String name){
+        values().find {it.name() == name}
+    }
+
+}
