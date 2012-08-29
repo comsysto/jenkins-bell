@@ -1,31 +1,29 @@
 import java.awt.BorderLayout
-import java.awt.Desktop
-import java.awt.event.ActionListener
-import java.awt.event.WindowEvent
-import javax.swing.JButton
-import javax.swing.JFrame
-import javax.swing.JTextArea
-import java.awt.event.WindowAdapter
-import javax.swing.JScrollPane
 import java.awt.Color
+import java.awt.Desktop
+import java.awt.GridLayout
+import java.awt.event.ActionListener
+import java.awt.event.WindowAdapter
+import java.awt.event.WindowEvent
+import javax.swing.*
 
 class PopupModule extends AbstractModule {
 
-    List<Build> buildsToShow = []
+    final List<Build> buildsToShow = []
     JFrame currentFrame = null
 
 
     @Override
     void onBuildChangedState(Build build) {
-        synchronized(buildsToShow){
+        synchronized (buildsToShow) {
             buildsToShow.add(build)
             tryOpenFrame()
         }
     }
 
-    void tryOpenFrame(){
-        synchronized(buildsToShow){
-            if(currentFrame == null && !buildsToShow.empty){
+    void tryOpenFrame() {
+        synchronized (buildsToShow) {
+            if (currentFrame == null && !buildsToShow.empty) {
                 openFrame(buildsToShow.remove(0))
             }
         }
@@ -71,19 +69,38 @@ class PopupModule extends AbstractModule {
             openInBrowser(build)
         }.asType(ActionListener))
         frame.getContentPane().add(openButton, BorderLayout.NORTH)
-        frame.setSize(400, 400)
-        frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE)
-
-        def windowClosed = {
-            tryOpenFrame()
-        }
 
         def closeWindow = {
-            if (!frame.isVisible()) return
-            frame.setVisible(false)
-            frame.dispose()
-            windowClosed()
+            synchronized (buildsToShow) {
+                if (currentFrame != null) {
+                    currentFrame.setVisible(false)
+                    currentFrame.dispose()
+                    currentFrame = null
+                }
+                tryOpenFrame()
+            }
         }
+
+        JPanel closeButtonPanel = new JPanel(new GridLayout(1, 2))
+
+        JButton closeButton = new JButton("close")
+        closeButton.addActionListener({e -> closeWindow()} as ActionListener)
+        closeButtonPanel.add(closeButton)
+
+        JButton closeAllButton = new JButton("close all")
+        closeAllButton.addActionListener({e ->
+            synchronized (buildsToShow) {
+                buildsToShow.clear()
+            }
+            closeWindow()
+        } as ActionListener)
+        closeButtonPanel.add(closeAllButton)
+
+        frame.getContentPane().add(closeButtonPanel, BorderLayout.SOUTH)
+
+
+        frame.setSize(400, 400)
+        frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE)
 
         frame.addWindowListener(new WindowAdapter() {
             @Override
@@ -102,7 +119,7 @@ class PopupModule extends AbstractModule {
             }
         })
 
-
+        currentFrame = frame
         frame.setVisible(true)
         frame.setAlwaysOnTop(true)
         frame

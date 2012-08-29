@@ -6,7 +6,7 @@ case $scriptpath in
   * ) DIR=$(dirname $scriptpath)
 esac
 
-cd $DIR
+cd "$DIR"
 
 PLIST=com.comsysto.JenkinsBell.plist
 DEST=~/Library/LaunchAgents
