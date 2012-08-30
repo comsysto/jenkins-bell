@@ -11,7 +11,7 @@ enum BuildState {
     SUCCESS, FETCH_ERROR, UNSTABLE, FAILURE;
 
     boolean isExceptional(){
-        this == SUCCESS
+        this != SUCCESS
     }
 
     static BuildState forName(String name){
