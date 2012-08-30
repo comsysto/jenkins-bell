@@ -22,6 +22,8 @@ class DockModule extends AbstractMenuModule {
 
         if(highestBuildState?.exceptional && buildStateCount && buildStateCount > 0){
             appleApplication.setDockIconBadge(buildStateCount.toString())
+        }else{
+            appleApplication.setDockIconBadge(null)
         }
 
         appleApplication.requestUserAttention(true)
