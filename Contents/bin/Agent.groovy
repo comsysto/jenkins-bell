@@ -71,11 +71,21 @@ class Agent {
     }
 
     void poll() {
-        listeners.each {it.onPollBegin()}
+        eachListenerWithCatch {it.onPollBegin()}
         builds.each {
             pollBuild(it)
         }
-        listeners.each {it.onEndPoll()}
+        eachListenerWithCatch {it.onEndPoll()}
+    }
+
+    void eachListenerWithCatch(Closure c){
+        listeners.each {
+            try{
+                c(it)
+            }catch(Exception e){
+                e.printStackTrace()
+            }
+        }
     }
 
 
@@ -88,7 +98,7 @@ class Agent {
             println("STATE CHANGE: $build.name $build.stateDescriptionWithColor")
 
             files.stateFile(build.fileName).text = build.buildState
-            listeners.each {it.onBuildChangedState(build)}
+            eachListenerWithCatch {it.onBuildChangedState(build)}
         }
 
     }
