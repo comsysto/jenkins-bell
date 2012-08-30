@@ -15,6 +15,7 @@ class PopupModule extends AbstractModule {
 
     @Override
     void onBuildChangedState(Build build) {
+        if(build.anyStateFetchError) return
         synchronized (buildsToShow) {
             buildsToShow.add(build)
             tryOpenFrame()

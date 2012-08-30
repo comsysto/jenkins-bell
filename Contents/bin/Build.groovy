@@ -86,12 +86,8 @@ class Build {
         new URI("http://$server/job/$job/lastBuild")
     }
 
-//    def File getStateFile(){
-//        Files.get().stateFile(fileName)
-//    }
-//
-//    def File getReportFile(){
-//        Files.get().reportFile(fileName)
-//    }
+    def boolean isAnyStateFetchError(){
+        buildState == BuildState.FETCH_ERROR || lastBuildState == BuildState.FETCH_ERROR
+    }
 
 }
