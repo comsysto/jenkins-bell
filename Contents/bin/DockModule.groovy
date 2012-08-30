@@ -40,8 +40,7 @@ class DockModule extends AbstractMenuModule {
         super.afterInstall()
         System.setProperty("com.apple.mrj.application.apple.menu.about.name", "JenkinsBell");
         PopupMenu popup = new PopupMenu();
-        def items = createMenuItems();
-        items.each {popup.add(it)}
+        populateMenu(popup);
         appleApplication.setDockMenu(popup)
         setupState(null)
     }

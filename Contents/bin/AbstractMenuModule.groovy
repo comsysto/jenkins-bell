@@ -5,6 +5,8 @@ import java.awt.MenuItem
 import java.awt.Desktop
 import java.awt.event.ActionListener
 import java.awt.PopupMenu
+import java.awt.MenuContainer
+import java.awt.Menu
 /**
  * Created with IntelliJ IDEA.
  * User: okrammer
@@ -63,23 +65,25 @@ abstract class AbstractMenuModule extends AbstractModule{
         }
     }
 
-    List<MenuItem> createMenuItems(){
-        def buildItems = agent.builds.sort{it.name}.collect {
+    void populateMenu(Menu menuContainer){
+        agent.builds.sort{it.name}.each {
             def item = new MenuItem()
             item.addActionListener({ e ->
                 Desktop.getDesktop().browse(it.buildUri)
             } as ActionListener)
             menuItemForBuild[it] = item
             setupLabel(item, it)
-            item
+            menuContainer.add(item)
         }
+
+        menuContainer.addSeparator()
 
         MenuItem configItem = new MenuItem("Open Configuration ...")
         configItem.addActionListener({e ->
             agent.doCommand("config")
         } as ActionListener)
 
-        buildItems + [configItem]
+        menuContainer.add(configItem)
     }
 
     @Override

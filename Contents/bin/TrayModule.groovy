@@ -37,8 +37,7 @@ class TrayModule extends AbstractMenuModule{
         logo.setSize(256, 256)
         trayIcon = new TrayIcon(logo.makeImage(), "JenkinsBell", popupMenu);
         trayIcon.setImageAutoSize(true);
-        def items = createMenuItems()
-        items.each {popupMenu.add(it)}
+        populateMenu(popupMenu)
         sysTray.add(trayIcon);
         trayIcon
     }
