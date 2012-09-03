@@ -1,7 +1,9 @@
 // monitor
 
+
 import groovy.transform.Field
-import static Option.*
+
+import static Option.none
 
 @Field
 Object loopLock = new Object()
@@ -23,7 +25,7 @@ void monitor() {
         onEachModule.onStartMonitoring()
         while (!isStopped) {
             poll()
-            loopLock.wait(onAModule.getConfig().defaultOrMap(60000){it.pollIntervalMillis})
+            loopLock.wait(onAModule.getConfig().defaultOrMap(60000) {it.pollIntervalMillis})
         }
         isLooping = false
         loopLock.notifyAll()
@@ -37,9 +39,10 @@ void stopMonitoring() {
         isStopped = true
         loopLock.notifyAll()
         while (isLooping) {
-            loopLock.wait()
+            loopLock.wait(100)
         }
         isStopped = false
+        builds = none()
         println "--STOPPED LOOPING--"
     }
 }
@@ -50,7 +53,7 @@ void startMonitoring() {
     }
 }
 
-void restartMonitoring(){
+void restartMonitoring() {
     stopMonitoring()
     startMonitoring()
 }
@@ -61,12 +64,24 @@ Option<Boolean> isLooping() {
     }
 }
 
-def void poll() {
-    onEachModule.onBeginPoll()
-    builds.each {
-        pollBuild(it)
+private def void poll() {
+    println "--POLL @ ${new Date()}--"
+    builds.ifSome{
+        it.each {
+            withCatch {-> onEachModule.onBeginPoll() }
+
+            pollBuild(it)
+            withCatch {-> onEachModule.onEndPoll() }
+        }
     }
-    onEachModule.onEndPoll()
+}
+
+private def withCatch(Closure c){
+    try{
+        c()
+    }catch(Exception e){
+        e.printStackTrace()
+    }
 }
 
 Option<File> stateFile(Build build) {
@@ -77,7 +92,6 @@ Option<File> stateFile(Build build) {
 
 
 def void pollBuild(Build build) {
-    println "--POLL @ ${new Date()}--"
     build.fetch()
 
     if (build.stateChanged) {
@@ -86,15 +100,15 @@ def void pollBuild(Build build) {
         onEachModule.stateFile(build.fileName).each {
             it.text = build.buildState
         }
-        onEachModule.onBuildChangedState(build)
+        withCatch {-> onEachModule.onBuildChangedState(build)}
     }
 
 }
 
 synchronized Option<List<Build>> getBuilds() {
-    builds = builds.ifNoneThanSome{
-        onAModule.getConfig().map{ config ->
-            config.buildConfigs.collect{
+    builds = builds.ifNoneThanSome {
+        onAModule.getConfig().map { config ->
+            config.buildConfigs.collect {
                 new Build(name: it.name, job: it.job, server: it.server)
             }
         }
@@ -108,5 +122,5 @@ Option<Map<BuildState, Integer>> getBuildStateCount() {
 }
 
 Option<BuildState> getHighestBuildState() {
-    builds.map{ it.max {build -> build.buildState}.buildState}
+    builds.map { it.max {build -> build.buildState}.buildState}
 }

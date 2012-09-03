@@ -21,7 +21,7 @@ void openConfigWindow(boolean exitOnClose = false) {
     def closeFrame = {->
         if (!frame) return
         frame.dispose()
-        frame = null
+        this.@frame = null
         if (exitOnClose) System.exit(0)
     }
 

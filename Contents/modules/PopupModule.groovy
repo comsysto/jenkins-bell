@@ -35,6 +35,11 @@ private void tryOpenFrame() {
 
 void openPopupWindow(Build build) {
 
+    boolean shouldCloseAfterLoseFocus = onAModule.getConfig().defaultOrMap(false) {
+        it.afterLoseFocusClosePopup
+    }
+
+
     def authors = !build.authors ? "" :
         """
             |authors:
@@ -109,7 +114,7 @@ void openPopupWindow(Build build) {
     frame.addWindowListener(new WindowAdapter() {
         @Override
         void windowDeactivated(WindowEvent e) {
-            if (kernel.required.getConfig().afterLoseFocusClosePopup) {
+            if (shouldCloseAfterLoseFocus) {
                 Thread.start({
                     Thread.sleep(500)
                     closeWindow()
