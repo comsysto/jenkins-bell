@@ -9,4 +9,4 @@ esac
 export BIN_DIR=$DIR/../bin
 export JAVA_OPTS=-Xdock:name="JenkinsBell"
 cd $BIN_DIR
-env groovy "$BIN_DIR/main.groovy" run
+env groovy "$BIN_DIR/main.groovy" monitor

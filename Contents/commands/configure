@@ -1,0 +1,4 @@
+!openConfigWindowAndExit
+ConfigModule.groovy
+ConfigWindowModule.groovy
+FilesModule.groovy

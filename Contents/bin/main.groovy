@@ -1,19 +1,27 @@
-#!/usr/bin/env groovy
-import java.awt.EventQueue
+#! /usr/bin/env groovy
+def commandsDir = new File("../commands")
+if(args.length < 1){
+    println "usage groovy main.groovy <${commandsDir.list()*.replaceAll("\\.groovy", "").join(" | ")}>"
+    return
+}
 
-def userHome = new File(System.getProperty("user.home"))
-def configDir = new File(userHome, ".jenkins-bell")
-App app = new App(new Files(configDir))
-if (args.size() < 1) {
-    println "usage <run | configure>"
-}
-def mode = args[0]
-if (mode == "configure") {
-    EventQueue.invokeLater {
-        app.configure()
-    }
-} else if (mode == "run") {
-    EventQueue.invokeLater {
-        app.restart()
+def command = args[0]
+def commandFile = command.contains("/") ? new File(command) : new File("../commands/$command")
+def mainMethods = []
+def moduleFiles = []
+commandFile.text.eachLine {
+    if(it.startsWith("#")){
+        // ignore comment
+    }else if(it.startsWith("!")){
+        mainMethods << it.substring(1).trim()
+    }else{
+        moduleFiles << (it.contains("/") ? new File(it) : new File("../modules/$it"))
     }
 }
+Kernel kernel = new Kernel(moduleFiles)
+kernel.reload()
+mainMethods.each {
+    kernel.onAModule."$it"()
+}
+
+
