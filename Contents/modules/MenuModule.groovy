@@ -1,12 +1,11 @@
 import groovy.transform.Field
 
 import java.awt.event.ActionListener
-import java.awt.Image
-import java.awt.Menu
-import java.awt.MenuItem
-import java.awt.Color
-import java.awt.Desktop
-import static Option.*
+import java.util.List
+import java.awt.*
+
+import static Option.option
+import static Option.some
 
 @Field
 final static COLOR_FOR_STATE = [
@@ -24,7 +23,7 @@ synchronized Option<Image> createLogoImage(int size) {
     }
 
     logo.setSize(size, size)
-    def color = onAModule.getHighestBuildState().defaultOrMap(null){
+    def color = onAModule.getHighestBuildState().defaultOrMap(null) {
         COLOR_FOR_STATE[it]
     }
 
@@ -32,15 +31,15 @@ synchronized Option<Image> createLogoImage(int size) {
     some(logo.makeImage() as Image)
 }
 
-Option<MenuController> createMenuController(Menu menu){
-    option(onAModule.getBuilds().map{
-        new MenuController(it, menu, {-> onAModule.openConfigWindow()})
+Option<MenuController> createMenuController(Menu menu) {
+    option(onAModule.getBuilds().map {
+        new MenuController(it, menu, onEachModule.menuContributions(),)
     })
 }
 
 class MenuController {
 
-    MenuController(List<Build> builds, Menu menu, Closure openConfigWindow) {
+    MenuController(List<Build> builds, Menu menu, List<Map<String, Closure>> menuContributions) {
         builds.sort {it.name}.each {
 
             def item = new MenuItem()
@@ -55,13 +54,19 @@ class MenuController {
 
         builds.each {update(it)}
 
-        MenuItem configItem = new MenuItem("Open Configuration ...")
+        menuContributions.each { map ->
+            map.each { entry ->
 
-        configItem.addActionListener({e ->
-           openConfigWindow()
-        } as ActionListener)
+                MenuItem configItem = new MenuItem(entry.key)
 
-        menu.add(configItem)
+                configItem.addActionListener({e ->
+                    entry.value()
+                } as ActionListener)
+
+                menu.add(configItem)
+            }
+        }
+
 
     }
 

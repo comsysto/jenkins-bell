@@ -64,7 +64,7 @@ class Kernel {
         def modules = findRespondingModules(name, args.collect {it.getClass()})
         modules.collect {
             it.script.invokeMethod(name, args)
-        }.flatten()
+        }.findAll {it?.isSome()}.collect {it.value}
     }
 
 

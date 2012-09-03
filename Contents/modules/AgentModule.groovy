@@ -57,7 +57,7 @@ void restartMonitoring(){
 
 Option<Boolean> isLooping() {
     synchronized (loopLock) {
-        new Some(isLooping)
+        Option.some(isLooping)
     }
 }
 
@@ -109,8 +109,4 @@ Option<Map<BuildState, Integer>> getBuildStateCount() {
 
 Option<BuildState> getHighestBuildState() {
     builds.map{ it.max {build -> build.buildState}.buildState}
-}
-
-void doCommand_monitor(){
-    startMonitoring()
 }

@@ -117,3 +117,7 @@ void openConfigWindowAndExit(){
     openConfigWindow(true)
 }
 
+Option<Map<String, Closure<Void>>> menuContributions(){
+   Option.some(["open Configuration ...": {-> openConfigWindow(false)}])
+}
+
