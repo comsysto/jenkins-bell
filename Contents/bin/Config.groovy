@@ -44,18 +44,11 @@ class Config {
     void fromXml(String xml){
         def root = new XmlSlurper().parseText(xml)
         buildConfigs = root.builds.build.collect{ build ->
-
-            assert build.name.text()
-            assert build.server.text()
-            assert build.job.text()
-
             new BuildConfig(
                 name: build.name.text(),
                 server: build.server.text(),
                 job:  build.job.text()
             )
-
-
         }
         pollIntervalMillis = root.pollIntervalMillis.text() as int
         speechCmd = root.speechCmd.text()

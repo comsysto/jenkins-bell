@@ -22,6 +22,7 @@ void monitor() {
         if (isLooping) return;
         println "--LOOPING--"
         isLooping = true
+        initBuilds()
         onEachModule.onStartMonitoring()
         while (!isStopped) {
             poll()
@@ -31,6 +32,20 @@ void monitor() {
         loopLock.notifyAll()
     }
     onEachModule.onStopMonitoring()
+}
+
+private void initBuilds() {
+    builds = onAModule.getConfig().map { config ->
+        config.buildConfigs.findAll {it.name && it.job && it.server}.collect {
+            def build = new Build(name: it.name, job: it.job, server: it.server)
+            onAModule.stateFile(build).ifSome {
+                def text = it.text.trim()
+                if(text)
+                    build.buildState = BuildState.forName(text)
+            }
+            build
+        }
+    }
 }
 
 void stopMonitoring() {
@@ -66,7 +81,7 @@ Option<Boolean> isLooping() {
 
 private def void poll() {
     println "--POLL @ ${new Date()}--"
-    builds.ifSome{
+    builds.ifSome {
         it.each {
             withCatch {-> onEachModule.onBeginPoll() }
 
@@ -76,10 +91,10 @@ private def void poll() {
     }
 }
 
-private def withCatch(Closure c){
-    try{
+private def withCatch(Closure c) {
+    try {
         c()
-    }catch(Exception e){
+    } catch (Exception e) {
         e.printStackTrace()
     }
 }
@@ -97,22 +112,16 @@ def void pollBuild(Build build) {
     if (build.stateChanged) {
         println("STATE CHANGE: $build.name $build.stateDescriptionWithColor")
 
-        onEachModule.stateFile(build.fileName).each {
+        onEachModule.stateFile(build).each {
             it.text = build.buildState
         }
-        withCatch {-> onEachModule.onBuildChangedState(build)}
+        withCatch {-> onEachModule.onBuildStateChanged(build)}
     }
 
 }
 
 synchronized Option<List<Build>> getBuilds() {
-    builds = builds.ifNoneThanSome {
-        onAModule.getConfig().map { config ->
-            config.buildConfigs.collect {
-                new Build(name: it.name, job: it.job, server: it.server)
-            }
-        }
-    }.flatten()
+    builds
 }
 
 Option<Map<BuildState, Integer>> getBuildStateCount() {
@@ -122,5 +131,5 @@ Option<Map<BuildState, Integer>> getBuildStateCount() {
 }
 
 Option<BuildState> getHighestBuildState() {
-    builds.map { it.max {build -> build.buildState}.buildState}
+    builds.map { Option.option(it.max {build -> build.buildState}?.buildState)}.flatten()
 }

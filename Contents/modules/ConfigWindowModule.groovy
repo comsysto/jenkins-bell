@@ -79,7 +79,7 @@ void openConfigWindow(boolean exitOnClose = false) {
             panel() {
                 borderLayout()
                 label(text: "speechCmd", constraints: BorderLayout.WEST)
-                textField(text: bind(source: config, sourceProperty: "speechCmd", mutual: true))
+                textField(text: bind(source: config, sourceProperty: "speechCmd", mutual: false), focusLost: {e -> config.speechCmd = e.source.text})
             }
 
             panel() {

@@ -25,6 +25,8 @@ synchronized Option<Config> getConfig() {
 
 synchronized void storeConfig(Config config) {
 
+    config.buildConfigs = config.buildConfigs.findAll {it.name || it.job || it.server}
+
     onAModule.configFile("config.xml").ifSome {
         it.withWriter("UTF-8") { writer ->
             writer << config.toXml()

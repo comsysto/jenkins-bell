@@ -2,6 +2,7 @@ import groovy.transform.Field
 
 import java.awt.BorderLayout
 import java.awt.Color
+import java.awt.EventQueue
 import java.awt.GridLayout
 import java.awt.event.ActionListener
 import java.awt.event.WindowAdapter
@@ -11,8 +12,8 @@ import javax.swing.*
 @Field List<Build> buildsToShow = []
 @Field JFrame currentFrame = null
 
-void onBuildChangedState(Build build) {
-    if (build.anyStateFetchError) return
+void onBuildStateChanged(Build build) {
+    if (build.anyStateFetchError || build.buildState) return
     synchronized (buildsToShow) {
         buildsToShow.add(build)
         tryOpenFrame()
@@ -26,14 +27,16 @@ void onStopMonitoring() {
 }
 
 private void tryOpenFrame() {
-    synchronized (buildsToShow) {
-        if (currentFrame == null && !buildsToShow.empty) {
-            openPopupWindow(buildsToShow.remove(0))
+    EventQueue.invokeLater {
+        synchronized (buildsToShow) {
+            if (currentFrame == null && !buildsToShow.empty) {
+                openPopupWindow(buildsToShow.remove(0))
+            }
         }
     }
 }
 
-void openPopupWindow(Build build) {
+private void openPopupWindow(Build build) {
 
     boolean shouldCloseAfterLoseFocus = onAModule.getConfig().defaultOrMap(false) {
         it.afterLoseFocusClosePopup
@@ -79,12 +82,16 @@ void openPopupWindow(Build build) {
     }.asType(ActionListener))
     frame.getContentPane().add(openButton, BorderLayout.NORTH)
 
-    def closeWindow = {
+    def closeWindow = { ->
         synchronized (buildsToShow) {
-            if (currentFrame != null) {
-                currentFrame.setVisible(false)
-                currentFrame.dispose()
-                currentFrame = null
+            if (frame != null) {
+                frame.setVisible(false)
+                frame.dispose()
+                synchronized (buildsToShow){
+                    if(this.@currentFrame == frame)
+                        this.@currentFrame = null
+                }
+
             }
             tryOpenFrame()
         }
@@ -115,9 +122,14 @@ void openPopupWindow(Build build) {
         @Override
         void windowDeactivated(WindowEvent e) {
             if (shouldCloseAfterLoseFocus) {
+                def localFrame = this.@frame
                 Thread.start({
-                    Thread.sleep(500)
-                    closeWindow()
+                    Thread.sleep(1500)
+                    EventQueue.invokeLater{
+                        if(localFrame.is(frame)){
+                            closeWindow()
+                        }
+                    }
                 })
             }
         }
@@ -131,6 +143,8 @@ void openPopupWindow(Build build) {
     currentFrame = frame
     frame.setVisible(true)
     frame.setAlwaysOnTop(true)
+    frame.requestFocus()
+    onAModule.requestForeground()
 }
 
 
