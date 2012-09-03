@@ -1,7 +1,7 @@
 !restartMonitoring
-AgentModule.groovy
-ConfigModule.groovy
-FilesModule.groovy
-LogModule.groovy
-ReportModule.groovy
-SpeechModule.groovy
+AgentModule
+ConfigModule
+FilesModule
+LogModule
+ReportModule
+SpeechModule

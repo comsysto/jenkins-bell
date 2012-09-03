@@ -1,4 +1,4 @@
 !openConfigWindowAndExit
-ConfigModule.groovy
-ConfigWindowModule.groovy
-FilesModule.groovy
+ConfigModule
+ConfigWindowModule
+FilesModule

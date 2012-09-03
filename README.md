@@ -81,7 +81,7 @@ This directory has the following layout:
         git clone git://github.com/comsysto/jenkins-bell.git
 
 
-# Run on Linux ##
+## Run on Linux ##
 
 * configure the app via
 
@@ -96,9 +96,41 @@ This directory has the following layout:
         $INSTALL_DIR/Contents/Linux/stop.sh
 
 
-### Install as startup item on Ubuntu ###
+## Install as startup item on Ubuntu ##
 
 * see this [howto](http://www.howtogeek.com/howto/ubuntu/how-to-add-a-program-to-the-ubuntu-startup-list-after-login)
+
+# Extending JenkinsBell #
+JenkinsBell uses some kind of micro kernel. In fact its a bunch of groovy script files that can call method on each others.
+The main feature of the kernel is, that a module that want to execute a function on another module have not not specify
+the target module, instead it calls a proxy object in the modules binding that routs the method call to a module that
+defines this method. This lookup never throws a error if the called method is not defined in any module. If the called
+method returns a result, this result is wrapped in a Option object (similar to the scala Option) which is used to signal if
+a module was found which satisfy the call. Each call to another module should be aware that the called module could not be deployed,
+to take advantage of the modular system. Another feature of the kernel is that not only one module can answer a call but all modules
+can return a value for a method call. With this facility patterns like listener or white board can easily be archived.
+
+Different module setups can be bundled to a 'command'. A command can be specified as first argument for the start up scripts:
+
+    ./run.sh myTestCommand
+
+To deploy a new command you can add a text file with the ending '.command' in the ~/.jenkins-bell/commands folder.
+Each line of the file contains a module name or path to a module that should be used in the command.
+If a line starts with a exclamation mark the rest of the line is used as a name of a method that is called after all modules are deployed.
+The order of the lines determine the order in which the modules are scanned for defined methods.
+And all lines that specify method names are called in the order in which they appear in the file.
+
+For example the file which defines the configure command (configure.command)
+
+    !openConfigWindowAndExit
+    ConfigModule
+    ConfigWindowModule
+    FilesModule
+
+
+
+
+
 
 
 
