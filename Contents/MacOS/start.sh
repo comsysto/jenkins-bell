@@ -1,10 +1,7 @@
 #!/bin/sh -li
 
-scriptpath=$0
-case $scriptpath in
- ./*) DIR=$(pwd) ;;
-  * ) DIR=$(dirname $scriptpath)
-esac
+cd "$(dirname $0)"
+DIR=$(pwd)
 
 export BIN_DIR=$DIR/../bin
 cd "$BIN_DIR"

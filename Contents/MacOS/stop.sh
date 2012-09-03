@@ -1,10 +1,7 @@
 #!/bin/sh -li
 
-scriptpath=$0
-case $scriptpath in
- ./*) DIR=$(pwd) ;;
-  * ) DIR=$(dirname $scriptpath)
-esac
+cd "$(dirname $0)"
+DIR=$(pwd)
 
 PID_FILE=$DIR/pid
 
