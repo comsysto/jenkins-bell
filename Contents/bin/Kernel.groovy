@@ -9,7 +9,7 @@
 import static Option.*
 
 class Kernel {
-
+    GroovyShell shell = new GroovyShell(Kernel.class.getClassLoader())
     private List<File> moduleFiles;
 
     List<Module> moduleList = []
@@ -23,7 +23,6 @@ class Kernel {
     }
 
     void reload(){
-        GroovyShell shell = new GroovyShell()
         shell.setVariable("kernel", this)
         shell.setVariable("onAModule", onAModule)
         shell.setVariable("onEachModule", onEachModule)
@@ -57,7 +56,9 @@ class Kernel {
             def methodResult = it.script.invokeMethod(name, args)
             methodResult
         }
-        option(results).flatten()
+        def option = option(results)
+        def flattenOption = option.flatten()
+        flattenOption
     }
 
     private def handleEach(String name, Object args) {

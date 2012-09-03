@@ -82,6 +82,10 @@ abstract class Option<T> {
             some(c())
         }
 
+        String toString(){
+            "none"
+        }
+
 
     }
 
@@ -117,13 +121,18 @@ abstract class Option<T> {
 
         Option flatten(){
             if(value instanceof Option){
-                return value.flatten()
+                return ((Option)value).flatten()
+            }else{
+                return this
             }
-            return this
         }
 
         Option<T> ifNoneThanSome(Closure<T> c){
             this
+        }
+
+        String toString(){
+            "some($value)"
         }
 
     }
