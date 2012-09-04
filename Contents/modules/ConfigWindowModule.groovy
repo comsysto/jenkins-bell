@@ -8,6 +8,13 @@ import javax.swing.JFrame
 @Field
 JFrame frame
 
+@Field
+Option menuContribution
+
+menuContribution = onAModule.contributeToMenu(["open Configuration ...": {-> openConfigWindow(false)}])
+
+
+
 void openConfigWindow(boolean exitOnClose = false) {
 
     if (frame) return
@@ -117,7 +124,4 @@ void openConfigWindowAndExit(){
     openConfigWindow(true)
 }
 
-Option<Map<String, Closure<Void>>> menuContributions(){
-   Option.some(["open Configuration ...": {-> openConfigWindow(false)}])
-}
 

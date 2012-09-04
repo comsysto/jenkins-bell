@@ -17,6 +17,14 @@ boolean isLooping = false
 @Field
 Option<List<Build>> builds = none()
 
+@Field
+Map<String, Closure> labelsAndActions = [:]
+
+@Field
+Option menuContribution = none()
+
+menuContribution = onAModule.contributeToMenu(labelsAndActions)
+
 void monitor() {
     synchronized (loopLock) {
         if (isLooping) return;
@@ -24,6 +32,10 @@ void monitor() {
         isLooping = true
         initBuilds()
         onEachModule.onStartMonitoring()
+
+
+        updateBuildsMenuContribution()
+
         while (!isStopped) {
             poll()
             loopLock.wait(onAModule.getConfig().defaultOrMap(60000) {it.pollIntervalMillis})
@@ -34,13 +46,34 @@ void monitor() {
     onEachModule.onStopMonitoring()
 }
 
+private void updateBuildsMenuContribution() {
+    menuContribution.ifSome { contribution ->
+
+        labelsAndActions.clear()
+        builds.ifSome {
+            it.sort {it.name}.each { build ->
+                def label = !build.fetchError && build.stateSuccess ? "Go to $build.name" : "!> Go to $build.name (${build.fetchError ? "FETCH ERROR" : build.buildState})"
+                def action = {-> onAModule.openInBrowser(build)}
+
+                labelsAndActions.put(label, action)
+            }
+        }
+
+        contribution.update()
+
+    }
+
+
+}
+
+
 private void initBuilds() {
     builds = onAModule.getConfig().map { config ->
         config.buildConfigs.findAll {it.name && it.job && it.server}.collect {
             def build = new Build(name: it.name, job: it.job, server: it.server)
             onAModule.stateFile(build).ifSome {
                 def text = it.text.trim()
-                if(text)
+                if (text)
                     build.buildState = BuildState.forName(text)
             }
             build
@@ -104,8 +137,6 @@ Option<File> stateFile(Build build) {
 }
 
 
-
-
 def void pollBuild(Build build) {
     build.fetch()
 
@@ -118,6 +149,10 @@ def void pollBuild(Build build) {
         withCatch {-> onEachModule.onBuildStateChanged(build)}
     }
 
+}
+
+void onBuildStateChanged(Build build){
+    updateBuildsMenuContribution()
 }
 
 synchronized Option<List<Build>> getBuilds() {

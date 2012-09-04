@@ -1,10 +1,9 @@
 import groovy.transform.Field
 
 import java.awt.event.ActionListener
-import java.util.List
 import java.awt.*
+import java.util.List
 
-import static Option.option
 import static Option.some
 
 @Field
@@ -15,7 +14,13 @@ final static COLOR_FOR_STATE = [
 ].asImmutable()
 
 @Field
-protected Logo logo;
+private Logo logo;
+
+@Field
+def contributionList = [];
+
+@Field
+def controllerList = [];
 
 synchronized Option<Image> createLogoImage(int size) {
     if (logo == null) {
@@ -32,31 +37,46 @@ synchronized Option<Image> createLogoImage(int size) {
 }
 
 Option<MenuController> createMenuController(Menu menu) {
-    option(onAModule.getBuilds().map {
-        new MenuController(it, menu, onEachModule.menuContributions(),)
-    })
+    def controller = new MenuController(menu)
+    controllerList << controller
+    some(controller)
 }
 
 class MenuController {
+    Menu menu
 
-    MenuController(List<Build> builds, Menu menu, List<Map<String, Closure>> menuContributions) {
-        builds.sort {it.name}.each {
+    MenuController(Menu menu) {
+        this.menu = menu
+    }
 
-            def item = new MenuItem()
+    void remove(){
+        controllerList.remove(this)
+    }
+}
 
-            item.addActionListener({ e ->
-                Desktop.getDesktop().browse(it.buildUri)
-            } as ActionListener)
+void openInBrowser(Build build) {
+    Desktop.getDesktop().browse(build.buildUri)
+}
 
-            itemForBuild[it] = item
-            menu.add(item)
-        }
+Option<MenuContribution> contributeToMenu(Map<String, Closure> labelsAndActions) {
+    def contribution = new MenuContribution(actionAndLabels: labelsAndActions, updateClosure: this.&updateMenuControllers)
+    contributionList << contribution
+    updateMenuControllers()
+    some(contribution)
+}
 
-        builds.each {update(it)}
+void updateMenuControllers() {
 
-        menuContributions.each { map ->
-            map.each { entry ->
+    controllerList.each { controller ->
+        controller.menu.removeAll()
+        Menu menu = controller.menu
 
+        contributionList.each { contribution ->
+
+            if(menu.getItemCount() != 0)
+                menu.addSeparator()
+
+            contribution.actionAndLabels.each { entry ->
                 MenuItem configItem = new MenuItem(entry.key)
 
                 configItem.addActionListener({e ->
@@ -65,22 +85,23 @@ class MenuController {
 
                 menu.add(configItem)
             }
+
         }
-
-
-    }
-
-    private Map<Build, MenuItem> itemForBuild = [:]
-
-    void update(Build build) {
-        def item = itemForBuild[build]
-        if (!item) return
-        item.setLabel(!build.fetchError && build.stateSuccess ? "Go to $build.name" : "!> Go to $build.name (${build.fetchError ? "FETCH ERROR" : build.buildState})")
     }
 }
 
-void openInBrowser(Build build) {
-    Desktop.getDesktop().browse(build.buildUri)
+class MenuContribution {
+    Map<String, Closure> actionAndLabels;
+    Closure updateClosure
+
+    void update() {
+        updateClosure()
+    }
+
+    void remove() {
+        contributionList.remove(this)
+    }
+
 }
 
 

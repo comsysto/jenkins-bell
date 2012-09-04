@@ -36,9 +36,6 @@ void onStartMonitoring() {
 void onBuildStateChanged(Build build) {
     if(! appleApplication) return
     updateDockIcon()
-    menuController.ifSome{
-        it.update(build)
-    }
 }
 
 void updateDockIcon() {

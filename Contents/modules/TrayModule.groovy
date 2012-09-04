@@ -30,9 +30,7 @@ private Image updateTrayIcon() {
 }
 
 void onBuildStateChanged(Build build) {
-    trayIcon.ifSome {
-        menuController.ifSome {it.update(build)}
-    }
+    updateTrayIcon()
 }
 
 void onStopMonitoring() {
