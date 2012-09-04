@@ -101,26 +101,34 @@ This directory has the following layout:
 * see this [howto](http://www.howtogeek.com/howto/ubuntu/how-to-add-a-program-to-the-ubuntu-startup-list-after-login)
 
 # Extending JenkinsBell #
-JenkinsBell uses some kind of micro kernel. In fact its a bunch of groovy script files that can call method on each others.
+JenkinsBell uses some kind of micro kernel like infrastructure. In fact its a bunch of groovy script files so called _modules_ that can call method on each others.
 The main feature of the kernel is, that a module that want to execute a function on another module have not not specify
-the target module, instead it calls a proxy object in the modules binding that routs the method call to a module that
-defines this method. This lookup never throws a error if the called method is not defined in any module. If the called
+the target module. Instead it calls a proxy object in the modules binding that routs the method call to a module that
+defines a method with this signature. This lookup never throws a error if the called method is not defined in any module. If the called
 method returns a result, this result is wrapped in a Option object (similar to the scala Option) which is used to signal if
-a module was found which satisfy the call. Each call to another module should be aware that the called module could not be deployed,
-to take advantage of the modular system. Another feature of the kernel is that not only one module can answer a call but all modules
-can return a value for a method call. With this facility patterns like listener or white board can easily be archived.
+a module was found which satisfy the call. Each call to another module should be aware that the called module could not be deployed.
 
-Different module setups can be bundled to a 'command'. A command can be specified as first argument for the start up scripts:
+     onAModule.createLogoImage(32).ifSome { image ->
+     ...
+     }
+
+Another feature of the kernel is that a caller can not only invoke a method on one module, but on all modules that define a method with the requested signature,
+any returned result will be collected in a list.
+With this facility patterns like listener or white board can easily be archived.
+
+    onEachModule.onStartMonitoring()
+
+Different module setups can be bundled to a _command_. A _command_ can be specified as first argument for the start up scripts:
 
     ./run.sh myTestCommand
 
-To deploy a new command you can add a text file with the ending '.command' in the ~/.jenkins-bell/commands folder.
+To deploy a new command you can add a text file with the ending _.command_ in the _~/.jenkins-bell/commands_ folder.
 Each line of the file contains a module name or path to a module that should be used in the command.
 If a line starts with a exclamation mark the rest of the line is used as a name of a method that is called after all modules are started.
 The order of the lines determine the order in which the modules are scanned for defined methods and
 the lines that specify method names are called in the order in which they appear in the file.
 
-For example the file /Applications/JenkinsBell.app/Contents/commands/configure.command defines the configure command has the following content:
+For example the file _/Applications/JenkinsBell.app/Contents/commands/configure.command_ that defines the _configure_ command has the following content:
 
     !openConfigWindowAndExit
     ConfigModule

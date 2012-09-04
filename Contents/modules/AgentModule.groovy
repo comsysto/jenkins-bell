@@ -33,7 +33,6 @@ void monitor() {
         initBuilds()
         onEachModule.onStartMonitoring()
 
-
         updateBuildsMenuContribution()
 
         while (!isStopped) {
