@@ -4,10 +4,10 @@ jenkins-bell
 JenkinsBell is a groovy script to monitor the build result of certain jobs of multiple Jenkins instances.
 
 There are multiple ways that a change in the state of a job can be announced:
-    * Use a text-to-speech tool to read the name of the job and the build result, The command that is used can be configured dependent on the OS.
-    * Open a message window
-    * Create report files that can be used in command line scripts or MacOS GeekTools.
-      This reports are stored in the ~/.jenkins-bell/report folder
+* Use a text-to-speech tool to read the name of the job and the build result, The command that is used can be configured dependent on the OS.
+* Open a message window
+* Create report files that can be used in command line scripts or MacOS GeekTools.
+  This reports are stored in the ~/.jenkins-bell/report folder
 
 The script creates a hidden directory in your user home folder with the name '.jenkins-bell'.
 This directory has the following layout:
@@ -116,11 +116,11 @@ Different module setups can be bundled to a 'command'. A command can be specifie
 
 To deploy a new command you can add a text file with the ending '.command' in the ~/.jenkins-bell/commands folder.
 Each line of the file contains a module name or path to a module that should be used in the command.
-If a line starts with a exclamation mark the rest of the line is used as a name of a method that is called after all modules are deployed.
-The order of the lines determine the order in which the modules are scanned for defined methods.
-And all lines that specify method names are called in the order in which they appear in the file.
+If a line starts with a exclamation mark the rest of the line is used as a name of a method that is called after all modules are started.
+The order of the lines determine the order in which the modules are scanned for defined methods and
+the lines that specify method names are called in the order in which they appear in the file.
 
-For example the file which defines the configure command (configure.command)
+For example the file /Applications/JenkinsBell.app/Contents/commands/configure.command defines the configure command has the following content:
 
     !openConfigWindowAndExit
     ConfigModule

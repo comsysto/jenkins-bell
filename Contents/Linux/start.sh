@@ -8,7 +8,12 @@ DIR=`dirname $SCRIPT`
 export BIN_DIR=$DIR/../bin
 cd "$BIN_DIR"
 
-env groovy "$BIN_DIR/main.groovy" monitor > /dev/null &
+COMMAND=$1
+if [ -z "$COMMAND" ]; then
+    COMMAND=monitor
+fi
+
+env groovy "$BIN_DIR/main.groovy" "$COMMAND" > /dev/null &
 
 JB_PID=$!
 PID_FILE=$DIR/pid

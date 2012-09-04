@@ -6,7 +6,13 @@ DIR=$(pwd)
 export BIN_DIR=$DIR/../bin
 cd "$BIN_DIR"
 
-env groovy "$BIN_DIR/main.groovy" agent > /dev/null &
+COMMAND=$1
+if [ -z "$COMMAND" ]; then
+    COMMAND=monitor
+fi
+
+export JAVA_OPTS=-Xdock:name="JenkinsBell"
+env groovy "$BIN_DIR/main.groovy" COMMAND > /dev/null &
 
 JB_PID=$!
 PID_FILE=$DIR/pid
