@@ -114,12 +114,11 @@ Option<Boolean> isLooping() {
 private def void poll() {
     println "--POLL @ ${new Date()}--"
     builds.ifSome {
+        withCatch {-> onEachModule.onBeginPoll() }
         it.each {
-            withCatch {-> onEachModule.onBeginPoll() }
-
             pollBuild(it)
-            withCatch {-> onEachModule.onEndPoll() }
         }
+        withCatch {-> onEachModule.onEndPoll() }
     }
 }
 
