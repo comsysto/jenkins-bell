@@ -142,7 +142,7 @@ def void pollBuild(Build build) {
         println("STATE CHANGE: $build.name $build.stateDescriptionWithColor")
 
         onEachModule.stateFile(build).each {
-            it.text = build.buildState
+            it.text = build.buildState?.name()?:""
         }
         withCatch {-> onEachModule.onBuildStateChanged(build)}
     }
