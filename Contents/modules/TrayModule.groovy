@@ -11,6 +11,12 @@ import java.awt.TrayIcon
 void onStartMonitoring() {
     if (!SystemTray.supported) return
 
+    def useTray = onAModule.getConfig().defaultOrMap(false){
+        it.trayEnabled
+    }
+
+    if(!useTray) return
+
     trayIcon = onAModule.createLogoImage(64).map { icon ->
         def popupMenu = new PopupMenu();
         menuController = onAModule.createMenuController(popupMenu)
