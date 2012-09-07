@@ -11,18 +11,21 @@ import java.awt.TrayIcon
 void onStartMonitoring() {
     if (!SystemTray.supported) return
 
-    trayIcon = onAModule.createLogoImage(32).map { icon ->
+    trayIcon = onAModule.createLogoImage(64).map { icon ->
         def popupMenu = new PopupMenu();
         menuController = onAModule.createMenuController(popupMenu)
         new TrayIcon(icon, "JenkinsBell", popupMenu)
     }
-    trayIcon.ifSome { SystemTray.systemTray.add(it) }
+    trayIcon.ifSome {
+        it.setImageAutoSize(true)
+        SystemTray.systemTray.add(it)
+    }
 
 
 }
 
 private Image updateTrayIcon() {
-    onAModule.createLogoImage(32).ifSome { image ->
+    onAModule.createLogoImage(64).ifSome { image ->
         trayIcon.ifSome { tray ->
             tray.setImage(image)
         }
