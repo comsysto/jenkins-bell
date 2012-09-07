@@ -1,4 +1,5 @@
 !restartMonitoring
+UiBaseModule
 AgentModule
 ConfigModule
 ConfigWindowModule

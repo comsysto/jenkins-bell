@@ -83,7 +83,7 @@ class Build {
     }
 
     def URI getBuildUri(){
-        new URI("http://$server/job/$job/lastBuild")
+        "http://$server/job/$job/lastBuild"
     }
 
     def boolean isAnyStateFetchError(){

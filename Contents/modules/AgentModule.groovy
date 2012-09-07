@@ -52,9 +52,14 @@ private void updateBuildsMenuContribution() {
         builds.ifSome {
             it.sort {it.name}.each { build ->
                 def label = !build.fetchError && build.stateSuccess ? "Go to $build.name" : "!> Go to $build.name (${build.fetchError ? "FETCH ERROR" : build.buildState})"
-                def action = {-> onAModule.openInBrowser(build)}
+                def createOpenAction = {url -> onAModule.openInBrowser(url)}
+                def subMenu = [
+                    "Go to Last Build": {-> createOpenAction("http://$build.server/job/$build.job/lastBuild")},
+                    "Go to Job": {-> createOpenAction("http://$build.server/job/$build.job")},
+                    "Start Build": {-> new URL("http://$build.server/job/$build.job/build").text}
+                ]
 
-                labelsAndActions.put(label, action)
+                labelsAndActions.put(label, subMenu)
             }
         }
 
