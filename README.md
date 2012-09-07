@@ -100,6 +100,17 @@ This directory has the following layout:
 
 * see this [howto](http://www.howtogeek.com/howto/ubuntu/how-to-add-a-program-to-the-ubuntu-startup-list-after-login)
 
+## Known Linux Issues ##
+
+### 'Go to xxx' menu items doesn't work when clicked ###
+When started via terminal, there is a message like "Desktop API not supported".
+Try to install gnome libs:
+
+    sudo apt-get install libgnome2-0
+
+* [ubuntu forum](http://ubuntuforums.org/showpost.php?p=12177562&postcount=3)
+* [oracle forum](https://forums.oracle.com/forums/thread.jspa?messageID=10065699)
+
 # Extending JenkinsBell #
 JenkinsBell uses some kind of micro kernel like infrastructure. In fact its a bunch of groovy script files so called _modules_ that can call method on each others.
 The main feature of the kernel is, that a module that want to execute a function on another module have not not specify
@@ -128,12 +139,21 @@ If a line starts with a exclamation mark the rest of the line is used as a name 
 The order of the lines determine the order in which the modules are scanned for defined methods and
 the lines that specify method names are called in the order in which they appear in the file.
 
-For example the file _/Applications/JenkinsBell.app/Contents/commands/configure.command_ that defines the _configure_ command has the following content:
+For example the file _/Applications/JenkinsBell.app/Contents/commands/configure.command_ that defines the _configure_ command, has the following content:
 
     !openConfigWindowAndExit
     ConfigModule
     ConfigWindowModule
     FilesModule
+
+to be continued ...
+
+# LOPs #
+* doc:  describe upgrade via git
+* feat: add favorite feature
+* feat: start build feature
+* imp:  add contribute to config feature
+* doc:  describe installation directory
 
 
 
