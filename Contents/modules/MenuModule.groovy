@@ -57,6 +57,11 @@ Option<MenuController> createMenuController(Menu menu) {
     some(controller)
 }
 
+void openInBrowser(Build build) {
+    java.awt.Desktop.getDesktop().browse(build.buildUri)
+}
+
+
 class MenuController {
     Menu menu
 
