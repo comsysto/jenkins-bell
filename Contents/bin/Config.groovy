@@ -49,7 +49,7 @@ class Config {
                 name: build.name.text(),
                 server: build.server.text(),
                 job:  build.job.text(),
-                favorite: build.favorite.text().toBoolean()
+                favorite: (build.favorite?.text()?:"true").toBoolean()
             )
         }
         pollIntervalMillis = root.pollIntervalMillis.text() as int
