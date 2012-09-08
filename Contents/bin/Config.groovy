@@ -24,7 +24,7 @@ class Config {
                         name build.name
                         server build.server
                         job build.job
-                        favorite build.favorite
+                        groups build.groups?:""
                     }
                 }
             }
@@ -49,7 +49,7 @@ class Config {
                 name: build.name.text(),
                 server: build.server.text(),
                 job:  build.job.text(),
-                favorite: (build.favorite?.text()?:"true").toBoolean()
+                groups: build.groups.text()
             )
         }
         pollIntervalMillis = root.pollIntervalMillis.text() as int

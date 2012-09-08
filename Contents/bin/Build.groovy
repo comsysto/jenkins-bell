@@ -11,7 +11,7 @@ class Build {
     String name
     String job
     String server
-    boolean favorite
+    List<String> groups
     Throwable fetchError
     BuildState buildState
     BuildState lastBuildState

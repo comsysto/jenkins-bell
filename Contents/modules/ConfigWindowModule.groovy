@@ -51,7 +51,7 @@ void openConfigWindow(boolean exitOnClose = false) {
                             propertyColumn(header: "Name", propertyName: 'name')
                             propertyColumn(header: "Server", propertyName: 'server')
                             propertyColumn(header: "Job", propertyName: 'job')
-                            propertyColumn(header: "Favorite", propertyName: 'favorite', type: Boolean)
+                            propertyColumn(header: "Groups", propertyName: 'groups')
                         }
                     }
                 }

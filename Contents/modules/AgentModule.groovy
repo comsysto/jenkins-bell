@@ -67,21 +67,21 @@ private void updateBuildsMenuContribution() {
         menu.clear()
         builds.ifSome {
             def allBuilds = it.sort{it.name}
-            def favoriteBuildMaps = allBuilds.findAll {it.favorite}.collect { build ->
-                createBuildMap(build)
-            }.sum()
+            def groups = allBuilds.collect {it.groups}.flatten().unique().sort()
 
-            def otherBuildMaps = allBuilds.findAll {!it.favorite}.collect { build ->
-                createBuildMap(build)
-            }.sum()
-            menu.putAll(favoriteBuildMaps)
-            menu.put("Other Jobs", otherBuildMaps)
+            def topLevelBuilds = allBuilds.findAll {!it.groups}.collectEntries {createBuildMap(it)}
+            menu.putAll(topLevelBuilds)
+
+            menu["seperator1"] = null
+
+            groups.each { group ->
+                def groupMenus = allBuilds.findAll {group in it.groups}.collect { build ->
+                    createBuildMap(build)
+                }
+
+                menu[group] = groupMenus.sum()
+            }
         }
-
-
-
-
-
 
         contribution.update()
 
@@ -94,7 +94,10 @@ private void updateBuildsMenuContribution() {
 private void initBuilds() {
     builds = onAModule.getConfig().map { config ->
         config.buildConfigs.findAll {it.name && it.job && it.server}.collect {
-            def build = new Build(name: it.name, job: it.job, server: it.server, favorite: it.favorite)
+
+            def groups = (it.groups?:"").split("[,;: ]").findAll {it?.trim()}
+
+            def build = new Build(name: it.name, job: it.job, server: it.server, groups: groups)
             onAModule.stateFile(build).ifSome {
                 def text = it.text.trim()
                 if (text)

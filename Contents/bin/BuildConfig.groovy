@@ -4,5 +4,5 @@ class BuildConfig {
     @Bindable String name;
     @Bindable String server;
     @Bindable String job;
-    @Bindable boolean favorite;
+    @Bindable String groups;
 }

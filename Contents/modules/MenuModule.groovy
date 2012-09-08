@@ -85,6 +85,8 @@ private void appendMapAsMenu(Menu parent, Map<String, Object> map){
             } as ActionListener)
 
             parent.add(configItem)
+        }else if(entry.value == null){
+            parent.addSeparator()
         }else{
             println("Illegal value in menu map: $entry.value")
         }
