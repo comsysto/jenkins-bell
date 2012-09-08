@@ -18,12 +18,12 @@ boolean isLooping = false
 Option<List<Build>> builds = none()
 
 @Field
-Map<String, Closure> labelsAndActions = [:]
+Map<String, Closure> menu = [:]
 
 @Field
 Option menuContribution = none()
 
-menuContribution = onAModule.contributeToMenu(labelsAndActions)
+menuContribution = onAModule.contributeToMenu(menu)
 
 void monitor() {
     synchronized (loopLock) {
@@ -46,22 +46,42 @@ void monitor() {
 }
 
 private void updateBuildsMenuContribution() {
+
+    def createOpenAction = {url -> onAModule.openInBrowser(url)}
+
+    def createBuildMap = {build ->
+        def label = !build.fetchError && build.stateSuccess ? "Go to $build.name" : "!> Go to $build.name (${build.fetchError ? "FETCH ERROR" : build.buildState})"
+
+        def subMenu = [
+                "Go to Last Build": {-> createOpenAction("http://$build.server/job/$build.job/lastBuild")},
+                "Go to Job": {-> createOpenAction("http://$build.server/job/$build.job")},
+                "Start Build": {-> new URL("http://$build.server/job/$build.job/build").text}
+        ]
+
+        [(label): subMenu]
+    }
+
+
     menuContribution.ifSome { contribution ->
 
-        labelsAndActions.clear()
+        menu.clear()
         builds.ifSome {
-            it.sort {it.name}.each { build ->
-                def label = !build.fetchError && build.stateSuccess ? "Go to $build.name" : "!> Go to $build.name (${build.fetchError ? "FETCH ERROR" : build.buildState})"
-                def createOpenAction = {url -> onAModule.openInBrowser(url)}
-                def subMenu = [
-                    "Go to Last Build": {-> createOpenAction("http://$build.server/job/$build.job/lastBuild")},
-                    "Go to Job": {-> createOpenAction("http://$build.server/job/$build.job")},
-                    "Start Build": {-> new URL("http://$build.server/job/$build.job/build").text}
-                ]
+            def allBuilds = it.sort{it.name}
+            def favoriteBuildMaps = allBuilds.findAll {it.favorite}.collect { build ->
+                createBuildMap(build)
+            }.sum()
 
-                labelsAndActions.put(label, subMenu)
-            }
+            def otherBuildMaps = allBuilds.findAll {!it.favorite}.collect { build ->
+                createBuildMap(build)
+            }.sum()
+            menu.putAll(favoriteBuildMaps)
+            menu.put("Other Jobs", otherBuildMaps)
         }
+
+
+
+
+
 
         contribution.update()
 
@@ -74,7 +94,7 @@ private void updateBuildsMenuContribution() {
 private void initBuilds() {
     builds = onAModule.getConfig().map { config ->
         config.buildConfigs.findAll {it.name && it.job && it.server}.collect {
-            def build = new Build(name: it.name, job: it.job, server: it.server)
+            def build = new Build(name: it.name, job: it.job, server: it.server, favorite: it.favorite)
             onAModule.stateFile(build).ifSome {
                 def text = it.text.trim()
                 if (text)

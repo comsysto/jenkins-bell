@@ -11,6 +11,7 @@ class Build {
     String name
     String job
     String server
+    boolean favorite
     Throwable fetchError
     BuildState buildState
     BuildState lastBuildState

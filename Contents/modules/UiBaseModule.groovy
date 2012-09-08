@@ -23,25 +23,31 @@ final static COLOR_FOR_STATE = [
 @Field
 private Logo logo;
 
-
-
-
+// custom EventQueue implementation to handle Exceptions in the EDT
 Toolkit.getDefaultToolkit().getSystemEventQueue().push(new EventQueue() {
     @Override
     protected void dispatchEvent(AWTEvent event) {
         try {
             super.dispatchEvent(event);
         } catch (Throwable t) {
-            if(t instanceof UndeclaredThrowableException){
-                t = t.getCause()
-            }
-            t.printStackTrace()
-            openErrorWindow(t)
+            handleEventQueueErrorInternal(t)
         }
     }
 });
 
-void openErrorWindow(Throwable t) {
+// bridge method to call from inner class to binding.
+private void handleEventQueueErrorInternal(Throwable t){
+    onAModule.handleError(t)
+}
+
+void handleError(Throwable t) {
+
+    t.printStackTrace()
+
+    if(t instanceof UndeclaredThrowableException){
+        t = t.getCause()
+    }
+
     EventQueue.invokeLater {
         def writer = new StringWriter()
         t.printStackTrace(new PrintWriter(writer))
@@ -51,7 +57,7 @@ void openErrorWindow(Throwable t) {
             borderLayout()
             label(constraints: BorderLayout.NORTH, text: "Exception occured:")
             scrollPane(id: "sp", constraints: BorderLayout.CENTER) {
-                textPane(id: "tp", text: stackTrace, caretPosition: 0)
+                textPane(id: "tp", editable: false, text: stackTrace, caretPosition: 0)
             }
             button(text: "close", constraints: BorderLayout.SOUTH, actionPerformed: {e -> swing.frame.dispose()})
         }

@@ -24,6 +24,7 @@ class Config {
                         name build.name
                         server build.server
                         job build.job
+                        favorite build.favorite
                     }
                 }
             }
@@ -47,7 +48,8 @@ class Config {
             new BuildConfig(
                 name: build.name.text(),
                 server: build.server.text(),
-                job:  build.job.text()
+                job:  build.job.text(),
+                favorite: build.favorite.text().toBoolean()
             )
         }
         pollIntervalMillis = root.pollIntervalMillis.text() as int

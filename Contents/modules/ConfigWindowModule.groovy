@@ -11,7 +11,7 @@ JFrame frame
 @Field
 Option menuContribution
 
-menuContribution = onAModule.contributeToMenu(["open Configuration ...": {-> openConfigWindow(false)}])
+menuContribution = onAModule.contributeToMenu(["Open Configuration ...": {-> openConfigWindow(false)}])
 
 
 
@@ -39,7 +39,7 @@ void openConfigWindow(boolean exitOnClose = false) {
     }
 
     SwingBuilder swing = new SwingBuilder()
-    frame = swing.frame(id: "frame", title: "JenkinsBell - Config", size: [400, 400], show: true, windowClosing: {e -> closeFrame()}) {
+    frame = swing.frame(id: "frame", title: "JenkinsBell - Config", size: [800, 800], show: true, windowClosing: {e -> closeFrame()}) {
         borderLayout()
         panel(constraints: BorderLayout.CENTER) {
             boxLayout(axis: BoxLayout.PAGE_AXIS)
@@ -51,6 +51,7 @@ void openConfigWindow(boolean exitOnClose = false) {
                             propertyColumn(header: "Name", propertyName: 'name')
                             propertyColumn(header: "Server", propertyName: 'server')
                             propertyColumn(header: "Job", propertyName: 'job')
+                            propertyColumn(header: "Favorite", propertyName: 'favorite', type: Boolean)
                         }
                     }
                 }
