@@ -4,6 +4,9 @@ import java.awt.Image
 import java.awt.PopupMenu
 import java.awt.SystemTray
 import java.awt.TrayIcon
+import javax.swing.JPanel
+import groovy.swing.SwingBuilder
+import java.awt.BorderLayout
 
 @Field Option<TrayIcon> trayIcon = Option.none()
 @Field Option menuController = Option.none()
@@ -48,4 +51,20 @@ void onStopMonitoring() {
         trayIcon = Option.none()
         menuController = Option.none()
     }
+}
+
+void readConfigElement(slurper, config){
+   config.trayEnabled = (slurper.trayEnabled?:"true").toBoolean()
+}
+
+void writeConfigElement(builder, config){
+    builder.trayEnabled config.trayEnabled
+}
+
+Option<List<JPanel>> configElementPanel(config){
+    Option.some([new SwingBuilder().panel(){
+        borderLayout()
+        label(text: "trayEnabled", constraints: BorderLayout.WEST)
+        checkBox(selected: config.speechEnabled, actionPerformed: {e -> config.speechEnabled = e.source.selected})
+    }])
 }

@@ -4,6 +4,9 @@
 import groovy.transform.Field
 
 import static Option.none
+import javax.swing.JPanel
+import groovy.swing.SwingBuilder
+import java.awt.BorderLayout
 
 @Field
 Object loopLock = new Object()
@@ -194,3 +197,71 @@ Option<Map<BuildState, Integer>> getBuildStateCount() {
 Option<BuildState> getHighestBuildState() {
     builds.map { Option.option(it.max {build -> build.buildState}?.buildState)}.flatten()
 }
+
+void readConfigElement(slurper, config) {
+    config.pollIntervalMillis = (slurper.pollIntervalMillis ?: "60000").toInteger()
+    config.buildConfigs = slurper.builds.build.collect{ build ->
+        [
+                name: build.name.text(),
+                server: build.server.text(),
+                job:  build.job.text(),
+                groups: build.groups.text()
+        ]
+    }
+}
+
+void writeConfigElement(builder, config) {
+    builder.pollIntervalMillis config.pollIntervalMillis
+    builder.builds{
+        (config.buildConfigs?:[]).each {build ->
+            builder.build{
+                name build.name
+                server build.server
+                job build.job
+                groups build.groups?:""
+            }
+        }
+    }
+}
+
+Option<List<JPanel>> configElementPanel(config) {
+    def builder = new SwingBuilder()
+    Option.some(
+            [
+                    builder.panel(border: builder.titledBorder(title: "BuildConfig")) {
+                        borderLayout()
+                        scrollPane {
+                            table(id: 'buildConfigTable') {
+                                tableModel(list: config.buildConfigs) {
+                                    propertyColumn(header: "Name", propertyName: 'name')
+                                    propertyColumn(header: "Server", propertyName: 'server')
+                                    propertyColumn(header: "Job", propertyName: 'job')
+                                    propertyColumn(header: "Groups", propertyName: 'groups')
+                                }
+                            }
+                        }
+
+
+                        panel(constraints: BorderLayout.SOUTH) {
+                            gridLayout(rows: 1, columns: 2)
+                            button(text: "add", actionPerformed: {e ->
+                                config.buildConfigs.add([name: "", server: "", job: "", groups: ""])
+                                builder.buildConfigTable.model.fireTableDataChanged()
+                                def index = config.buildConfigs.size() - 1
+                                builder.buildConfigTable.selectionModel.setSelectionInterval(index, index)
+                            })
+                            button(text: "remove", actionPerformed: {e ->
+                                config.buildConfigs.remove(builder.buildConfigTable.selectionModel.leadSelectionIndex)
+                                builder.buildConfigTable.model.fireTableDataChanged()
+                            })
+                        }
+                    },
+                    builder.panel() {
+                        borderLayout()
+                        label(text: "pollIntervalMillis", constraints: BorderLayout.WEST)
+                        spinner(value: config.pollIntervalMillis, stateChanged: {e -> config.pollIntervalMillis = e.source.value})
+                    }
+            ]
+    )
+}
+

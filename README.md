@@ -150,10 +150,8 @@ to be continued ...
 
 # LOPs #
 * doc:  describe upgrade via git
-* feat: add favorite feature
-* feat: start build feature
-* imp:  add contribute to config feature
 * doc:  describe installation directory
+* feat: added support for parameterized builds
 
 
 

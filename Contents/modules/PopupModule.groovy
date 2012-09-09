@@ -1,3 +1,4 @@
+import groovy.swing.SwingBuilder
 import groovy.transform.Field
 
 import java.awt.BorderLayout
@@ -82,13 +83,13 @@ private void openPopupWindow(Build build) {
     }.asType(ActionListener))
     frame.getContentPane().add(openButton, BorderLayout.NORTH)
 
-    def closeWindow = { ->
+    def closeWindow = {->
         synchronized (buildsToShow) {
             if (frame != null) {
                 frame.setVisible(false)
                 frame.dispose()
-                synchronized (buildsToShow){
-                    if(this.@currentFrame == frame)
+                synchronized (buildsToShow) {
+                    if (this.@currentFrame == frame)
                         this.@currentFrame = null
                 }
 
@@ -125,8 +126,8 @@ private void openPopupWindow(Build build) {
                 def localFrame = this.@frame
                 Thread.start({
                     Thread.sleep(1500)
-                    EventQueue.invokeLater{
-                        if(localFrame.is(frame)){
+                    EventQueue.invokeLater {
+                        if (localFrame.is(frame)) {
                             closeWindow()
                         }
                     }
@@ -147,4 +148,30 @@ private void openPopupWindow(Build build) {
     onAModule.requestForeground()
 }
 
+void readConfigElement(slurper, config) {
+    config.popupEnabled = (slurper.popupEnabled ?: "true").toBoolean()
+    config.afterLoseFocusClosePopup = (slurper.afterLoseFocusClosePopup ?: "true").toBoolean()
+}
 
+void writeConfigElement(builder, config) {
+    builder.popupEnabled config.popupEnabled
+    builder.afterLoseFocusClosePopup config.afterLoseFocusClosePopup
+}
+
+Option<List<JPanel>> configElementPanel(config) {
+    def builder = new SwingBuilder()
+    Option.some(
+            [
+                    builder.panel() {
+                        borderLayout()
+                        label(text: "popupEnabled", constraints: BorderLayout.WEST)
+                        checkBox(selected: config.popupEnabled, actionPerformed: {e -> config.popupEnabled = e.source.selected})
+                    },
+                    builder.panel() {
+                        borderLayout()
+                        label(text: "afterLoseFocusClosePopup", constraints: BorderLayout.WEST)
+                        checkBox(selected: config.afterLoseFocusClosePopup, actionPerformed: {e -> config.afterLoseFocusClosePopup = e.source.selected})
+                    },
+            ]
+    )
+}
