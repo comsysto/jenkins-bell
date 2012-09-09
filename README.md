@@ -32,7 +32,7 @@ This directory has the following layout:
 
 * clone the jenkins-bell repository with git
 
-        git clone git://github.com/comsysto/jenkins-bell.git
+        git clone git://github.com/comsysto/jenkins-bell.git /Applications/JenkinsBell.app
 
 
 ## Run on MacOS as Application ##
