@@ -53,7 +53,7 @@ void handleError(Throwable t) {
         t.printStackTrace(new PrintWriter(writer))
         def stackTrace = writer.toString()
         SwingBuilder swing = new SwingBuilder()
-        def frame = swing.frame(id: "frame", title: "JenkinsBell - Error", size: [800, 400]) {
+        def frame = swing.frame(id: "frame", title: "JenkinsBell - Error", location:  [200, 200], size: [800, 400]) {
             borderLayout()
             label(constraints: BorderLayout.NORTH, text: "Exception occured:")
             scrollPane(id: "sp", constraints: BorderLayout.CENTER) {

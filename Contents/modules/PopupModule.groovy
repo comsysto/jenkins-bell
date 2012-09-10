@@ -117,6 +117,7 @@ private void openPopupWindow(Build build) {
 
 
     frame.setSize(400, 400)
+    frame.setLocation(200, 200)
     frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE)
 
     frame.addWindowListener(new WindowAdapter() {

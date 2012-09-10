@@ -41,7 +41,7 @@ void openConfigWindow(boolean exitOnClose = false) {
 
 
         SwingBuilder swing = new SwingBuilder()
-        frame = swing.frame(id: "frame", title: "JenkinsBell - Config", size: [800, 800], show: true, windowClosing: {e -> closeFrame()}) {
+        frame = swing.frame(id: "frame", title: "JenkinsBell - Config", location: [200, 200], size: [800, 800], show: true, windowClosing: {e -> closeFrame()}) {
             borderLayout()
             panel(id: "configPanelParent", constraints: BorderLayout.CENTER) {
                 boxLayout(axis: BoxLayout.PAGE_AXIS)
