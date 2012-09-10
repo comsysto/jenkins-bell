@@ -153,6 +153,19 @@ to be continued ...
 * doc:  describe installation directory
 * feat: added support for parameterized builds
 
+# Version History #
+## v0.1.0 ##
+* First Version
+* No Module System
+
+## v0.2.0 ##
+* Module System
+* Contribute to Config
+* Contribute to Menu
+* Job Groups
+* Start Builds
+
+
 
 
 
