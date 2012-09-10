@@ -11,6 +11,12 @@ class TColor {
         if(s == null) return
         "\033[31m$s\033[0m"
     }
+
+    static String yellowFg(Object s) {
+        if(s == null) return
+        "\033[33m$s\033[0m"
+    }
+
     static String greenFg(Object s) {
         if(s == null) return
         "\033[32m$s\033[0m"

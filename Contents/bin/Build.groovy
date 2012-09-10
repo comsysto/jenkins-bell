@@ -64,15 +64,15 @@ class Build {
     }
 
     def String getLastBuildStateWithColor(){
-        isSuccess(lastBuildState) ? TColor.greenFg(lastBuildState) : TColor.redFg(lastBuildState)
+        isSuccess(lastBuildState) ? TColor.greenFg(lastBuildState) : (lastBuildState == BuildState.UNSTABLE ? TColor.yellowFg(lastBuildState): TColor.redFg(lastBuildState))
     }
 
     def String getBuildStateWithColor(){
-        isSuccess(buildState) ? TColor.greenFg(buildState) : TColor.redFg(buildState)
+        isSuccess(buildState) ? TColor.greenFg(buildState) : (buildState == BuildState.UNSTABLE ? TColor.yellowFg(buildState): TColor.redFg(buildState));
     }
 
     def String getStateDescriptionWithColor(){
-        building ? TColor.yellowBg("BUILDING ${getBuildStateWithColor()}") : (lastBuildState ? "$lastBuildStateWithColor -> $buildStateWithColor" : "$buildStateWithColor")
+        building ? "${TColor.yellowBg("BUILDING")}  ${getBuildStateWithColor()}" : (lastBuildState ? "$lastBuildStateWithColor -> $buildStateWithColor" : "$buildStateWithColor")
     }
 
     def String getFetchMessageWithColor(){
