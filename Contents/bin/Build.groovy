@@ -39,7 +39,7 @@ class Build {
 
         building = json.building
         // fixing state if build drops state to null
-        if(!building){
+        if(!building && buildState != result){
             lastBuildState = buildState
             buildState = result
         }
@@ -72,7 +72,7 @@ class Build {
     }
 
     def String getStateDescriptionWithColor(){
-        building ? TColor.yellowBg("BUILDING ${getBuildStateWithColor()}") : "$lastBuildStateWithColor -> $buildStateWithColor"
+        building ? TColor.yellowBg("BUILDING ${getBuildStateWithColor()}") : (lastBuildState ? "$lastBuildStateWithColor -> $buildStateWithColor" : "$buildStateWithColor")
     }
 
     def String getFetchMessageWithColor(){

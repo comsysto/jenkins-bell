@@ -103,8 +103,15 @@ private void initBuilds() {
             def build = new Build(name: it.name, job: it.job, server: it.server, groups: groups)
             onAModule.stateFile(build).ifSome {
                 def text = it.text.trim()
-                if (text)
-                    build.buildState = BuildState.forName(text)
+                def states = text?.split(":")
+                if (states){
+                    if(states[0]){
+                        build.buildState = BuildState.forName(states[0])
+                    }
+                    if(states.size() > 1 && states[1]){
+                        build.lastBuildState = BuildState.forName(states[1])
+                    }
+                }
             }
             build
         }
@@ -173,7 +180,7 @@ def void pollBuild(Build build) {
         println("STATE CHANGE: $build.name $build.stateDescriptionWithColor")
 
         onEachModule.stateFile(build).each {
-            it.text = build.buildState?.name()?:""
+            it.text = build.buildState?.name()?:"" + ":" + build.lastBuildState?.name()?:""
         }
         withCatch {-> onEachModule.onBuildStateChanged(build)}
     }
