@@ -176,7 +176,7 @@ Option<File> stateFile(Build build) {
 def void pollBuild(Build build) {
     onAModule.updateBuild(build)
 
-    if (build.stateChanged) {
+    if (build.stateChanged || build.buildingChanged) {
         println("STATE CHANGE: $build.name $build.stateDescriptionWithColor")
 
         onEachModule.stateFile(build).each {

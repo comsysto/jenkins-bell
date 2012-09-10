@@ -16,6 +16,7 @@ class Build {
     BuildState buildState
     BuildState lastBuildState
     boolean building
+    boolean lastBuilding
     Date date
     List<String> authors
     List<String> changes
@@ -52,7 +53,7 @@ class Build {
 //    }
 
     def boolean isStateChanged(){
-        buildState != lastBuildState
+        buildState != null && buildState != lastBuildState
     }
 
     def boolean isStateSuccess(){
@@ -90,5 +91,12 @@ class Build {
     def boolean isAnyStateFetchError(){
         buildState == BuildState.FETCH_ERROR || lastBuildState == BuildState.FETCH_ERROR
     }
+
+
+    boolean isBuildingChanged(){
+        building != lastBuilding
+    }
+
+
 
 }

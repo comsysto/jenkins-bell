@@ -19,11 +19,14 @@ void updateBuild(build) {
     def json = new groovy.json.JsonSlurper().parseText(jsonText)
 
     def result = BuildState.forName(json.result)
-
+    build.lastBuilding = build.building
     build.building = json.building
+
+
+    build.lastBuildState = build.buildState
+
     // fixing state if build drops state to null
     if (!build.building) {
-        build.lastBuildState = build.buildState
         build.buildState = result
     }
 
