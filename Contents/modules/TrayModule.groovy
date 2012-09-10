@@ -54,7 +54,7 @@ void onStopMonitoring() {
 }
 
 void readConfigElement(slurper, config){
-   config.trayEnabled = (slurper.trayEnabled?:"true").toBoolean()
+   config.trayEnabled = (slurper?.trayEnabled?:"true").toBoolean()
 }
 
 void writeConfigElement(builder, config){

@@ -149,8 +149,8 @@ private void openPopupWindow(Build build) {
 }
 
 void readConfigElement(slurper, config) {
-    config.popupEnabled = (slurper.popupEnabled ?: "true").toBoolean()
-    config.afterLoseFocusClosePopup = (slurper.afterLoseFocusClosePopup ?: "true").toBoolean()
+    config.popupEnabled = (slurper?.popupEnabled ?: "true").toBoolean()
+    config.afterLoseFocusClosePopup = (slurper?.afterLoseFocusClosePopup ?: "true").toBoolean()
 }
 
 void writeConfigElement(builder, config) {

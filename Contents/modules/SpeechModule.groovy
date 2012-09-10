@@ -17,8 +17,8 @@ void onBuildChangedState(Build build) {
 }
 
 void readConfigElement(slurper, config) {
-    config.speechEnabled = (slurper.speechEnabled ?: "true").toBoolean()
-    config.speechCmd = slurper.speechCmd
+    config.speechEnabled = (slurper?.speechEnabled ?: "true").toBoolean()
+    config.speechCmd = slurper?.speechCmd?:"say"
 }
 
 void writeConfigElement(builder, config) {

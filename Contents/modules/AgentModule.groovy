@@ -199,8 +199,8 @@ Option<BuildState> getHighestBuildState() {
 }
 
 void readConfigElement(slurper, config) {
-    config.pollIntervalMillis = (slurper.pollIntervalMillis ?: "60000").toInteger()
-    config.buildConfigs = slurper.builds.build.collect{ build ->
+    config.pollIntervalMillis = (slurper?.pollIntervalMillis ?: "60000").toInteger()
+    config.buildConfigs = (slurper?.builds?.build?:[]).collect{ build ->
         [
                 name: build.name.text(),
                 server: build.server.text(),
