@@ -228,7 +228,7 @@ Option<List<JPanel>> configElementPanel(config) {
     def builder = new SwingBuilder()
     Option.some(
             [
-                    builder.panel(border: builder.titledBorder(title: "BuildConfig")) {
+                    builder.panel(border: builder.titledBorder(title: "BuildConfig"), minimumSize: [300, 300], preferredSize: [300, 300]) {
                         borderLayout()
                         scrollPane {
                             table(id: 'buildConfigTable') {

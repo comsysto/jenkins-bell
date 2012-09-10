@@ -23,7 +23,7 @@ void onEndPoll() {
         }
     }
 
-    reportFile("report/overview").ifSome { file ->
+    reportFile("overview").ifSome { file ->
         file.withPrintWriter { out ->
             onAModule.getBuilds().toList().each { build ->
                 out.println("--  $build.name  ".padRight(50, "-") + ("  $build.stateDescriptionWithColor").padLeft(30, "-"))

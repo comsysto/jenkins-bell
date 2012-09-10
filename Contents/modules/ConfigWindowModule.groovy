@@ -5,6 +5,7 @@ import java.awt.BorderLayout
 import java.awt.EventQueue
 import javax.swing.BoxLayout
 import javax.swing.JFrame
+import javax.swing.JScrollPane
 
 @Field
 JFrame frame
@@ -39,15 +40,20 @@ void openConfigWindow(boolean exitOnClose = false) {
             closeFrame()
         }
 
-
         SwingBuilder swing = new SwingBuilder()
-        frame = swing.frame(id: "frame", title: "JenkinsBell - Config", location: [200, 200], size: [800, 800], show: true, windowClosing: {e -> closeFrame()}) {
+        frame = swing.frame(id: "frame", title: "JenkinsBell - Config", location: [200, 200], size: [600, 600], show: true, windowClosing: {e -> closeFrame()}) {
             borderLayout()
-            panel(id: "configPanelParent", constraints: BorderLayout.CENTER) {
-                boxLayout(axis: BoxLayout.PAGE_AXIS)
-                def panels = onEachModule.configElementPanel(config)*.toList().flatten()
-                panels.each {
-                    configPanelParent.add(it)
+            scrollPane(constraints: BorderLayout.CENTER, horizontalScrollBarPolicy: JScrollPane.HORIZONTAL_SCROLLBAR_NEVER, verticalScrollBarPolicy: JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED) {
+                panel() {
+                    borderLayout()
+                    panel(id: "configPanelParent", constraints: BorderLayout.NORTH) {
+                        boxLayout(axis: BoxLayout.PAGE_AXIS)
+                        def panels = onEachModule.configElementPanel(config)*.toList().flatten()
+                        panels.each {
+                            widget(it)
+                            glue(minimumSize: [10, 10], preferredSize: [10, 10])
+                        }
+                    }
                 }
             }
             panel(constraints: BorderLayout.SOUTH) {
@@ -55,16 +61,14 @@ void openConfigWindow(boolean exitOnClose = false) {
                 button(text: "save", actionPerformed: {e -> saveConfigAndRestart()})
                 button(text: "cancel", actionPerformed: {e -> closeFrame()})
             }
-
-
         }
 
 
         frame.requestFocus()
         onAModule.requestForeground()
     }
-
 }
+
 
 void openConfigWindowAndExit() {
     openConfigWindow(true)
