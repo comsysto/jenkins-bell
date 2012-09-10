@@ -11,3 +11,4 @@ PopupModule
 ReportModule
 SpeechModule
 TrayModule
+JenkinsModule

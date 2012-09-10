@@ -174,7 +174,7 @@ Option<File> stateFile(Build build) {
 
 
 def void pollBuild(Build build) {
-    build.fetch()
+    onAModule.updateBuild(build)
 
     if (build.stateChanged) {
         println("STATE CHANGE: $build.name $build.stateDescriptionWithColor")

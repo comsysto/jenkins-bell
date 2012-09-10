@@ -5,3 +5,4 @@ FilesModule
 LogModule
 ReportModule
 SpeechModule
+JenkinsModule

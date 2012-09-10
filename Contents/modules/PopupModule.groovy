@@ -19,11 +19,16 @@ import javax.swing.*
 ]
 
 void onBuildStateChanged(Build build) {
-    if (build.anyStateFetchError || !build.buildState) return
-    synchronized (buildsToShow) {
-        buildsToShow.add(build)
-        tryOpenFrame()
+    onAModule.getConfig().ifSome(){
+        if (build.anyStateFetchError || !build.buildState || build.building || !it.popupEnabled) return
+
+        synchronized (buildsToShow) {
+            buildsToShow.add(build)
+            tryOpenFrame()
+        }
     }
+
+
 }
 
 void onStopMonitoring() {
@@ -119,7 +124,6 @@ private void openPopupWindow(Build build) {
     closeButtonPanel.add(closeAllButton)
 
     frame.getContentPane().add(closeButtonPanel, BorderLayout.SOUTH)
-
 
     frame.setSize(400, 400)
     frame.setLocation(200, 200)
