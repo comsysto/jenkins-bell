@@ -3,7 +3,6 @@ import groovy.swing.SwingBuilder
 import java.awt.BorderLayout
 import javax.swing.JPanel
 
-@Override
 void onBuildStateChanged(Build build) {
 
     onAModule.getConfig().ifSome { config ->

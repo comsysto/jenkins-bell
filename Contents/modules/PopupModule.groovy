@@ -12,6 +12,11 @@ import javax.swing.*
 
 @Field List<Build> buildsToShow = []
 @Field JFrame currentFrame = null
+@Field colorsForState = [
+        (BuildState.SUCCESS): new Color(0xCCFF99),
+        (BuildState.UNSTABLE): new Color(0xFFFF99),
+        (BuildState.FAILURE): new Color(0xFF9999)
+]
 
 void onBuildStateChanged(Build build) {
     if (build.anyStateFetchError || !build.buildState) return
@@ -74,7 +79,7 @@ private void openPopupWindow(Build build) {
     JFrame frame = new JFrame("JenkinsBell Notification");
     def pane = new JTextArea(text)
     pane.editable = false
-    pane.background = build.stateSuccess ? new Color(0xCCFF99) : new Color(0xFF9999);
+    pane.background = colorsForState[build.buildState]
     frame.contentPane.layout = new BorderLayout()
     frame.contentPane.add(new JScrollPane(pane))
     def openButton = new JButton("open")
