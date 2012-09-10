@@ -14,7 +14,7 @@ import javax.swing.*
 @Field JFrame currentFrame = null
 
 void onBuildStateChanged(Build build) {
-    if (build.anyStateFetchError || build.buildState) return
+    if (build.anyStateFetchError || !build.buildState) return
     synchronized (buildsToShow) {
         buildsToShow.add(build)
         tryOpenFrame()

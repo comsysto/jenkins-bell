@@ -4,7 +4,7 @@ import java.awt.BorderLayout
 import javax.swing.JPanel
 
 @Override
-void onBuildChangedState(Build build) {
+void onBuildStateChanged(Build build) {
 
     onAModule.getConfig().ifSome { config ->
         if (build.anyStateFetchError || !config.speechEnabled) return

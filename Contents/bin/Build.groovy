@@ -39,7 +39,7 @@ class Build {
 
         building = json.building
         // fixing state if build drops state to null
-        if(!building && buildState != result){
+        if(!building){
             lastBuildState = buildState
             buildState = result
         }
