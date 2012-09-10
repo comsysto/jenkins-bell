@@ -5,7 +5,7 @@ import static Option.*
 import groovy.xml.MarkupBuilder
 
 @Field
-Option<Config> config = none()
+Option<Map> config = none()
 
 synchronized Option<Map> getConfig() {
     config = config.ifNoneThanSome{
@@ -48,18 +48,3 @@ synchronized void storeConfig(Map config) {
     config = null
 
 }
-
-Config defaultConfig(){
-    Config config = new Config()
-    config.buildConfigs = [
-            new BuildConfig(name: "Test", server: "localhost:8080", job:"TestJob")
-    ]
-    config.pollIntervalMillis = 10000
-    config.speechCmd = "say"
-    config.lastModified = new Date()
-    config.trayEnabled = true
-    config.speechEnabled = true
-    config
-}
-
-
