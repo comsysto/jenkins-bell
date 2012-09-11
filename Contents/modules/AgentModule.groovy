@@ -58,7 +58,10 @@ private void updateBuildsMenuContribution() {
         def subMenu = [
                 "Go to Last Build": {-> createOpenAction("http://$build.server/job/$build.job/lastBuild")},
                 "Go to Job": {-> createOpenAction("http://$build.server/job/$build.job")},
-                "Start Build": {-> new URL("http://$build.server/job/$build.job/build").text}
+                "Start Build": {->
+                    onAModule.startJob(build)
+
+                }
         ]
 
         [(label): subMenu]
