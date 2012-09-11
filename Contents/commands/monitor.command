@@ -12,3 +12,4 @@ ReportModule
 SpeechModule
 TrayModule
 JenkinsModule
+NotificationCenterModule

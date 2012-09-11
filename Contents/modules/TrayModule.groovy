@@ -44,7 +44,7 @@ private Image updateTrayIcon() {
 }
 
 void onBuildStateChanged(Build build) {
-    buidChanged = true
+    buildChanged = true
 }
 
 void onEndPoll() {
