@@ -53,7 +53,7 @@ private void updateBuildsMenuContribution() {
     def createOpenAction = {url -> onAModule.openInBrowser(url)}
 
     def createBuildMap = {build ->
-        def label = !build.fetchError && build.stateSuccess ? "Go to $build.name" : "!> Go to $build.name (${build.fetchError ? "FETCH ERROR" : build.buildState})"
+        def label = build.stateSuccess ? "$build.name" : "!> $build.name (${build.buildState})"
 
         def subMenu = [
                 "Go to Last Build": {-> createOpenAction("http://$build.server/job/$build.job/lastBuild")},
