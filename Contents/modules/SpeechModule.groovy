@@ -6,7 +6,7 @@ import javax.swing.JPanel
 void onBuildStateChanged(Build build) {
 
     onAModule.getConfig().ifSome { config ->
-        if (build.anyStateFetchError || build.building || !build.stateChanged || !config.popupEnabled) return
+        if (build.anyStateFetchError || build.building || !build.stateChanged || !build.buildState || !config.popupEnabled) return
 
         String message = "Build - $build.name - changed state from $build.lastBuildState to $build.buildState"
         [config.speechCmd, message].execute()

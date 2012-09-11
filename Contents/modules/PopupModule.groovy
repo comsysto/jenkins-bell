@@ -20,7 +20,7 @@ import javax.swing.*
 
 void onBuildStateChanged(Build build) {
     onAModule.getConfig().ifSome(){
-        if (build.anyStateFetchError || build.building || !build.stateChanged || !it.popupEnabled) return
+        if (build.anyStateFetchError || build.building || !build.stateChanged || !build.buildState || !it.popupEnabled) return
 
         synchronized (buildsToShow) {
             buildsToShow.add(build)

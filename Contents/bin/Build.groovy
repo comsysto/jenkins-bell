@@ -53,7 +53,7 @@ class Build {
 //    }
 
     def boolean isStateChanged(){
-        buildState != null && buildState != lastBuildState
+        buildState != lastBuildState
     }
 
     def boolean isStateSuccess(){

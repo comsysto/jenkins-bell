@@ -177,10 +177,10 @@ def void pollBuild(Build build) {
     onAModule.updateBuild(build)
 
     if (build.stateChanged || build.buildingChanged) {
-        println("STATE CHANGE: $build.name $build.stateDescriptionWithColor")
+        println("STATE CHANGE: $build.name $build.stateDescriptionWithColor [stateChanged: $build.stateChanged, buildingChanged: $build.buildingChanged]")
 
-        onEachModule.stateFile(build).each {
-            it.text = build.buildState?.name()?:"" + ":" + build.lastBuildState?.name()?:""
+        onAModule.stateFile(build).ifSome {
+            it.text = (build.buildState?.name()?:"") + ":" + (build.lastBuildState?.name()?:"")
         }
         withCatch {-> onEachModule.onBuildStateChanged(build)}
     }
