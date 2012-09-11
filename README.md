@@ -167,7 +167,9 @@ to be continued ...
 
 ## master ##
 * Fixed Window Location for Linux
-* ...
+* Fixed lots of Bugs
+* Supported start build on secured jenkins
+* Added support for Mac OS X notification center
 
 
 
