@@ -36,7 +36,9 @@ void updateBuild(build) {
     } catch (Exception e) {
         fetchError = e
         build.lastBuildState = build.buildState
-        buildState = BuildState.FETCH_ERROR
+        build.buildState = BuildState.FETCH_ERROR
+        build.lastBuilding = build.building
+        build.building = false
         return
     }
 
