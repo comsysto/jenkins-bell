@@ -10,6 +10,7 @@ import java.awt.BorderLayout
 
 @Field Option<TrayIcon> trayIcon = Option.none()
 @Field Option menuController = Option.none()
+@Field boolean buildChanged = true
 
 void onStartMonitoring() {
     if (!SystemTray.supported) return
@@ -29,6 +30,7 @@ void onStartMonitoring() {
         it.setImageAutoSize(true)
         SystemTray.systemTray.add(it)
     }
+    buildChanged = true
 
 
 }
@@ -42,7 +44,14 @@ private Image updateTrayIcon() {
 }
 
 void onBuildStateChanged(Build build) {
-    updateTrayIcon()
+    buidChanged = true
+}
+
+void onEndPoll() {
+    if(buildChanged){
+        updateTrayIcon()
+        buildChanged = false
+    }
 }
 
 void onStopMonitoring() {
