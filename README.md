@@ -100,6 +100,14 @@ This directory has the following layout:
 
 * see this [howto](http://www.howtogeek.com/howto/ubuntu/how-to-add-a-program-to-the-ubuntu-startup-list-after-login)
 
+## Update JenkinsBell ##
+In the majority of cases a simple git pull will work.
+
+    cd /Applications/JenkinsBell.app
+    git pull
+
+On Mac OS X if the update includes a change to the _Info.plist_ file a reboot can be required because the OS might cache the file.
+
 ## Known Linux Issues ##
 
 ### 'Go to xxx' menu items doesn't work when clicked ###
@@ -139,12 +147,91 @@ If a line starts with a exclamation mark the rest of the line is used as a name 
 The order of the lines determine the order in which the modules are scanned for defined methods and
 the lines that specify method names are called in the order in which they appear in the file.
 
-For example the file _/Applications/JenkinsBell.app/Contents/commands/configure.command_ that defines the _configure_ command, has the following content:
+For example the file _/Applications/JenkinsBell.app/Contents/commands/monitor.command_ that defines the _monitor_ command, has the following content:
 
-    !openConfigWindowAndExit
+    !restartMonitoring
+    UiBaseModule
+    AgentModule
     ConfigModule
     ConfigWindowModule
+    DockModule
     FilesModule
+    LogModule
+    MenuModule
+    PopupModule
+    ReportModule
+    SpeechModule
+    TrayModule
+    JenkinsModule
+    NotificationCenterModule
+
+The central module of JenkinsBell is the AgentModule.groovy it runs the monitoring main loop and invokes the lifecycle notification methods.
+A contributed module can participate in the lifecycle by defining some or all of the following methods:
+
+    void onStartMonitoring() {
+    }
+
+    void onBeginPoll() {
+    }
+
+    void onBuildStateChanged(build){
+    }
+
+    void onEndPoll(){
+    }
+
+    void onStopMonitoring() {
+    }
+
+To access all current builds the module can call:
+
+    Some<List> buildsOption = onAModule.getBuilds()
+    List builds = buildsOption.toList()
+    builds.each { build ->
+        // do something ...
+    }
+
+To contribute a config file entry and a panel in the config window:
+
+    void readConfigElement(slurper, config){
+       config.trayEnabled = (slurper?.trayEnabled?:"true").toBoolean()
+    }
+
+    void writeConfigElement(builder, config){
+        builder.trayEnabled config.trayEnabled
+    }
+
+    Option<List<JPanel>> configElementPanel(config){
+        Option.some([new SwingBuilder().panel(){
+            borderLayout()
+            label(text: "trayEnabled", constraints: BorderLayout.WEST)
+            checkBox(selected: config.speechEnabled, actionPerformed: {e -> config.speechEnabled = e.source.selected})
+        }])
+    }
+
+To contribute a new popup menu entry:
+
+    @Field
+    Option menuContribution
+
+    @Field
+    Map menu = ["My cool menu item": {-> println("Let's rock")}]
+
+    menuContribution = onAModule.contributeToMenu(menu)
+
+    void onSomeEvent(){
+         // you can later update the menu via:
+         menu["My new menu item"] = {-> println("hello world")}
+         menuContribution.ifSome{ it.update() }
+    }
+
+    void onSomeOtherEvent(){
+        // you can remove your contribution by calling
+        menuContribution.ifSome{ it.remove() }
+        menuContribution = Option.none()
+    }
+
+
 
 to be continued ...
 
@@ -155,21 +242,20 @@ to be continued ...
 
 # Version History #
 ## v0.1.0 ##
-* First Version
-* No Module System
+* First version
 
 ## v0.2.0 ##
-* Module System
-* Contribute to Config
-* Contribute to Menu
-* Job Groups
-* Start Builds
+* Module system
+* Contribute to config
+* Contribute to menu
+* Job groups
+* Start builds
 
 ## master ##
-* Fixed Window Location for Linux
-* Fixed lots of Bugs
-* Supported start build on secured jenkins
-* Added support for Mac OS X notification center
+* Fixed window location for linux
+* Fixed lots of bugs
+* Support start build on secured jenkins
+* Added support for Mac OS X notification center via terminal-notifier.app
 
 
 
