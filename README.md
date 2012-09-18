@@ -9,20 +9,15 @@ There are multiple ways that a change in the state of a job can be announced:
 * Create report files that can be used in command line scripts or MacOS GeekTools.
   This reports are stored in the ~/.jenkins-bell/report folder
 
-The script creates a hidden directory in your user home folder with the name '.jenkins-bell'.
-This directory has the following layout:
+# Licences #
+JenkinsBell is provided under the [Apache Licence Version 2](https://github.com/comsysto/jenkins-bell/blob/master/LICENSE.txt)
 
-        .jenkins-bell
-        ├── config.xml    # this file contains the settings of JenkinsBell
-        ├── log           # this file contains summary of the configured builds and the last state changes
-        ├── report        # in this directory a report of the current state of a job is located
-        │   ├── Test
-        │   └── overview  # this file contains a overview of the state of all configured builds
-        └── state         # in this directory the last seen state of a job is persisted
-            └── Test
+JenkinsBell bundles a slightly modified version of the terminal-notifier (replaced icon and bundle name) which is provided,
+like the original, under the [MIT licence](https://github.com/alloy/terminal-notifier#license).
+All credit for the terminal-notifier goes to the original version which can be downloaded from [github](https://github.com/alloy/terminal-notifier).
+
 
 # Install and Run#
-
 
 ## Install on MacOS ##
 
@@ -118,6 +113,21 @@ Try to install gnome libs:
 
 * [ubuntu forum](http://ubuntuforums.org/showpost.php?p=12177562&postcount=3)
 * [oracle forum](https://forums.oracle.com/forums/thread.jspa?messageID=10065699)
+
+# Directory Layout #
+
+The application creates a hidden directory in your user home folder with the name '.jenkins-bell'.
+This directory has the following layout:
+
+        .jenkins-bell
+        ├── config.xml    # this file contains the settings of JenkinsBell
+        ├── log           # this file contains summary of the configured builds and the last state changes
+        ├── report        # in this directory a report of the current state of a job is located
+        │   ├── Test
+        │   └── overview  # this file contains a overview of the state of all configured builds
+        └── state         # in this directory the last seen state of a job is persisted
+            └── Test
+
 
 # Extending JenkinsBell #
 JenkinsBell uses some kind of micro kernel like infrastructure. In fact its a bunch of groovy script files so called _modules_ that can call method on each others.

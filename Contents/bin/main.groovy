@@ -44,9 +44,13 @@ commandFile.text.eachLine {
 Kernel kernel = new Kernel(moduleFiles)
 kernel.reload()
 mainMethods.each {
-    kernel.onAModule."$it"()
+    if(args.length == 1){
+        kernel.onAModule."$it"()
+    } else if(args.length == 2){
+        def params = args[1 .. -1]
+        kernel.onAModule."$it"(* params)
+    }
 }
-
 
 def commandFiles(File parentDir){
     Map<String, File> fileMap = [:]

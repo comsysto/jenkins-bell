@@ -26,7 +26,10 @@ Map<String, Closure> menu = [:]
 @Field
 Option menuContribution = none()
 
-menuContribution = onAModule.contributeToMenu(menu)
+void start(){
+    menuContribution = onAModule.contributeToMenu(menu)
+}
+
 
 void monitor() {
     synchronized (loopLock) {

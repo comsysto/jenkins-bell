@@ -9,14 +9,14 @@ import java.awt.PopupMenu
 @Field def appleApplication
 @Field Option menuController = Option.none()
 
-try {
-    def clazz = getClass().getClassLoader().loadClass("com.apple.eawt.Application")
-    System.setProperty("com.apple.mrj.application.apple.menu.about.name", "JenkinsBell");
-    appleApplication = clazz.application
+    try {
+        def clazz = getClass().getClassLoader().loadClass("com.apple.eawt.Application")
+        System.setProperty("com.apple.mrj.application.apple.menu.about.name", "JenkinsBell");
+        appleApplication = clazz.application
 
-} catch (Exception e) {
-    // not on MacOS...
-}
+    } catch (Exception e) {
+        return false
+    }
 
 
 void onStartMonitoring() {

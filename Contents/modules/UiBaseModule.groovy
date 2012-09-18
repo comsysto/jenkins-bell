@@ -90,6 +90,18 @@ void openInBrowser(String url) {
     java.awt.Desktop.getDesktop().browse(new URI(url))
 }
 
+void writeIconImagesToDisk(String color) {
+    Logo logo = new Logo()
+    if (color){
+        logo.setBellColor(Color."$color")
+    }
+    def sizes = [512, 256, 128, 32, 16]
+    sizes.each {
+        logo.setSize(it, it)
+        def image = logo.makeImage()
+        ImageIO.write(image, "png", new File("../Resources/JenkinsBell-${color}-${it}.png"))
+    }
+}
 
 class Logo extends JComponent {
 
@@ -107,7 +119,7 @@ class Logo extends JComponent {
 
 
         Arc2D bottomArc = new Arc2D.Double()
-        bottomArc.setArc(-5, 37, 10, 10, 0, -180, Arc2D.CHORD)
+        bottomArc.setArc(-10, 27, 20, 20, 0, -180, Arc2D.CHORD)
 
         Shape bell = new Area(outerArc)
         bell.subtract(bellArea())
@@ -119,7 +131,7 @@ class Logo extends JComponent {
 
     private Area bellArea() {
         Arc2D innerArc = new Arc2D.Double()
-        innerArc.setArc(-30, -35, 60, 140, 0, 180, Arc2D.CHORD)
+        innerArc.setArc(-25, -32, 50, 130, 0, 180, Arc2D.CHORD)
         new Area(innerArc)
     }
 
@@ -133,30 +145,28 @@ class Logo extends JComponent {
             transformation.translate(50, 50)
             g2.transform(transformation)
             g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON)
+            g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC)
 
-            g2.setColor(Color.white)
-            g2.fill(bell(1, 1))
+            g2.setColor(Color.LIGHT_GRAY)
+            g2.fill(bell(2, 2))
+            g2.setStroke(new BasicStroke(2, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND))
+            g2.draw(bell(2, 2))
+
+            g2.setColor(Color.black)
+            g2.fill(bell())
+            g2.setColor(Color.WHITE)
+            g2.setStroke(new BasicStroke(2, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND))
+            g2.draw(bell())
+
             if (bellColor != null) {
                 g2.setColor(bellColor)
                 g2.fill(bellArea())
             }
-            g2.setColor(Color.black)
-            g2.fill(bell())
+
 
         } finally {
             g2.dispose()
         }
 
     }
-
-    void writeIconImagesToDisk() {
-        Logo logo = new Logo()
-        def sizes = [512, 256, 128, 32, 16]
-        sizes.each {
-            logo.setSize(it, it)
-            def image = logo.makeImage()
-            ImageIO.write(image, "png", new File("../Resources/JenkinsBell-${it}.png"))
-        }
-    }
-
 }

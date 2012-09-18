@@ -13,9 +13,9 @@ JFrame frame
 @Field
 Option menuContribution
 
-menuContribution = onAModule.contributeToMenu(["Open Configuration ...": {-> openConfigWindow(false)}])
-
-
+void start(){
+    menuContribution = onAModule.contributeToMenu(["Open Configuration ...": {-> openConfigWindow(false)}])
+}
 
 void openConfigWindow(boolean exitOnClose = false) {
 

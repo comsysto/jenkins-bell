@@ -27,14 +27,23 @@ class Kernel {
         shell.setVariable("onAModule", onAModule)
         shell.setVariable("onEachModule", onEachModule)
 
-        moduleList = moduleFiles.findAll {it.isFile()}.collect {
+
+        def allModules = moduleFiles.findAll {it.isFile()}.collect {
             println("parsing $it")
             new Module(script: shell.parse(it), file: it)
         }
 
-        moduleList.each {
-            it.script.run()
+        allModules.each {
+            if(it.script.run() == Boolean.FALSE) {
+                println "$it.file.name ignored"
+
+            } else {
+                println "$it.file.name started"
+                moduleList << it
+            }
         }
+
+        onEachModule.start()
 
     }
 
