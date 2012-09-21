@@ -74,6 +74,6 @@ Option<List<JPanel>> configElementPanel(config){
     Option.some([new SwingBuilder().panel(){
         borderLayout()
         label(text: "trayEnabled", constraints: BorderLayout.WEST)
-        checkBox(selected: config.speechEnabled, actionPerformed: {e -> config.speechEnabled = e.source.selected})
+        checkBox(selected: config.trayEnabled, actionPerformed: {e -> config.trayEnabled = e.source.selected})
     }])
 }

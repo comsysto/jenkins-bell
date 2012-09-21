@@ -159,7 +159,7 @@ class Logo extends JComponent {
             g2.draw(bell())
 
             if (bellColor != null) {
-                g2.setColor(bellColor)
+                g2.setColor(new Color(bellColor.getRed(), bellColor.getGreen(), bellColor.getBlue(), 128))
                 g2.fill(bellArea())
             }
 

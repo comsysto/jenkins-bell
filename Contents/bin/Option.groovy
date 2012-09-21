@@ -37,7 +37,7 @@ abstract class Option<T> {
         else c(value)
     }
 
-    def <E> void ifSome(Closure<Void> c){
+    def <E> void ifSome(Closure c){
         if (isNone()) return
         c(value)
     }
