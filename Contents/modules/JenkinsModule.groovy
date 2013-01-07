@@ -8,8 +8,11 @@ void startBuild(build) {
 }
 
 void startJob(build) {
+    loadJenkinsUrl("http://$build.server/job/$build.job/build")
+}
 
-    def url = new URL("http://$build.server/job/$build.job/build")
+String loadJenkinsUrl(urlString){
+    def url = new URL(urlString)
     def urlConnection = url.openConnection()
     onAModule.getConfig().ifSome { config ->
         if (config.authToken && config.authName)
@@ -23,15 +26,14 @@ void startJob(build) {
             stream.close()
         }
     }
-
 }
 
 void updateBuild(build) {
 
-    def url = new URL("http://${build.server}/job/${build.job}/lastBuild/api/json")
+    def url = "http://${build.server}/job/${build.job}/lastBuild/api/json"
     def jsonText
     try {
-        jsonText = url.text
+        jsonText = loadJenkinsUrl(url)
         fetchError = null
     } catch (Exception e) {
         fetchError = e
