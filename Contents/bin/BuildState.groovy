@@ -8,7 +8,7 @@
  */
 enum BuildState {
 
-    SUCCESS, FETCH_ERROR, UNSTABLE, FAILURE;
+    SUCCESS, IGNORED, FETCH_ERROR, UNSTABLE, FAILURE;
 
     boolean isExceptional(){
         this in [UNSTABLE, FAILURE]

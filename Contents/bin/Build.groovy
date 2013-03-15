@@ -20,6 +20,7 @@ class Build {
     Date date
     List<String> authors
     List<String> changes
+    boolean ignored = false
 
 //    def fetch() {
 //        def url = new URL("http://${server}/job/${job}/lastBuild/api/json")
