@@ -270,6 +270,10 @@ to be continued ...
 * updated icon
 * bundled up terminal-notifier for branding notification messages
 
+## next ##
+* added flag to disable build
+* split configuration in separate files for user and build data
+
 
 
 
