@@ -16,14 +16,14 @@ void onBuildStateChanged(Build build) {
 
 }
 
-void readConfigElement(slurper, config) {
-    config.speechEnabled = (slurper?.speechEnabled ?: "true").toBoolean()
-    config.speechCmd = slurper?.speechCmd?:"say"
+void readConfigElement(slurpers, config) {
+    config.speechEnabled = (slurpers?.user?.speechEnabled ?: "true").toBoolean()
+    config.speechCmd = slurpers?.user?.speechCmd?:"say"
 }
 
-void writeConfigElement(builder, config) {
-    builder.speechEnabled config.speechEnabled
-    builder.speechCmd config.speechCmd
+void writeConfigElement(builders, config) {
+    builders?.user?.speechEnabled config.speechEnabled
+    builders?.user?.speechCmd config.speechCmd
 }
 
 Option<List<JPanel>> configElementPanel(config) {

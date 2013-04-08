@@ -64,14 +64,14 @@ void updateBuild(build) {
     build.changes = json.changeSet?.items?.collect {it.msg.trim().split("\n")}.flatten()
 }
 
-void readConfigElement(slurper, config) {
-    config.authToken = slurper?.authToken
-    config.authName = slurper?.authName
+void readConfigElement(slurpers, config) {
+    config.authToken = slurpers?.user?.authToken
+    config.authName = slurpers?.user?.authName
 }
 
-void writeConfigElement(builder, config) {
-    builder.authToken config.authToken
-    builder.authName config.authName
+void writeConfigElement(builders, config) {
+    builders?.user?.authToken config.authToken
+    builders?.user?.authName config.authName
 }
 
 Option<List<JPanel>> configElementPanel(config) {

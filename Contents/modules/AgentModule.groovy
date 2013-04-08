@@ -235,9 +235,9 @@ Option<BuildState> getHighestBuildState() {
     builds.map { Option.option(it.max {build -> build.buildState}?.buildState)}.flatten()
 }
 
-void readConfigElement(slurper, config) {
-    config.pollIntervalMillis = (slurper?.pollIntervalMillis ?: "60000").toInteger()
-    config.buildConfigs = (slurper?.builds?.build?:[]).collect{ build ->
+void readConfigElement(slurpers, config) {
+    config.pollIntervalMillis = (slurpers?.user?.pollIntervalMillis ?: "60000").toInteger()
+    config.buildConfigs = (slurpers?.build?.builds?.build?:[]).collect{ build ->
         [
                 name: build.name.text(),
                 server: build.server.text(),
@@ -247,11 +247,12 @@ void readConfigElement(slurper, config) {
     }
 }
 
-void writeConfigElement(builder, config) {
-    builder.pollIntervalMillis config.pollIntervalMillis
-    builder.builds{
+void writeConfigElement(builders, config) {
+    builders?.user?.pollIntervalMillis config?.pollIntervalMillis
+    def configBuilder = builders?.build
+    configBuilder?.builds {
         (config.buildConfigs?:[]).each {build ->
-            builder.build{
+            configBuilder.build{
                 name build.name
                 server build.server
                 job build.job
