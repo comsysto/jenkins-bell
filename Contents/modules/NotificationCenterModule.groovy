@@ -35,12 +35,12 @@ void onBuildStateChanged(Build build) {
     }
 }
 
-void readConfigElement(slurper, config) {
-    config.notificationCenterEnabled = (slurper?.notificationCenterEnabled ?: "false").toBoolean()
+void readConfigElement(slurpers, config) {
+    config.notificationCenterEnabled = (slurpers?.user?.notificationCenterEnabled ?: "false").toBoolean()
 }
 
-void writeConfigElement(builder, config) {
-    builder.notificationCenterEnabled config.notificationCenterEnabled
+void writeConfigElement(builders, config) {
+    builders?.user?.notificationCenterEnabled config.notificationCenterEnabled
 }
 
 Option<List<JPanel>> configElementPanel(config) {

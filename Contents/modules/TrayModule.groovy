@@ -62,12 +62,12 @@ void onStopMonitoring() {
     }
 }
 
-void readConfigElement(slurper, config){
-   config.trayEnabled = (slurper?.trayEnabled?:"true").toBoolean()
+void readConfigElement(slurpers, config){
+   config.trayEnabled = (slurpers?.user?.trayEnabled?:"true").toBoolean()
 }
 
-void writeConfigElement(builder, config){
-    builder.trayEnabled config.trayEnabled
+void writeConfigElement(builders, config){
+    builders?.user?.trayEnabled config.trayEnabled
 }
 
 Option<List<JPanel>> configElementPanel(config){

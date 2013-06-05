@@ -120,12 +120,13 @@ The application creates a hidden directory in your user home folder with the nam
 This directory has the following layout:
 
         .jenkins-bell
-        ├── config.xml    # this file contains the settings of JenkinsBell
-        ├── log           # this file contains summary of the configured builds and the last state changes
-        ├── report        # in this directory a report of the current state of a job is located
+        ├── build-config.xml # this file contains the configured builds of JenkinsBell
+        ├── user-config.xml  # this file contains the user specific settings of JenkinsBell
+        ├── log             # this file contains summary of the configured builds and the last state changes
+        ├── report          # in this directory a report of the current state of a job is located
         │   ├── Test
-        │   └── overview  # this file contains a overview of the state of all configured builds
-        └── state         # in this directory the last seen state of a job is persisted
+        │   └── overview   # this file contains a overview of the state of all configured builds
+        └── state           # in this directory the last seen state of a job is persisted
             └── Test
 
 
@@ -203,12 +204,12 @@ To access all current builds the module can call:
 
 To contribute a config file entry and a panel in the config window:
 
-    void readConfigElement(slurper, config){
-       config.trayEnabled = (slurper?.trayEnabled?:"true").toBoolean()
+    void readConfigElement(slurpers, config){
+       config.trayEnabled = (slurpers?.user?.trayEnabled?:"true").toBoolean()
     }
 
-    void writeConfigElement(builder, config){
-        builder.trayEnabled config.trayEnabled
+    void writeConfigElement(builders, config){
+        builders.user.trayEnabled config.trayEnabled
     }
 
     Option<List<JPanel>> configElementPanel(config){
@@ -268,6 +269,10 @@ to be continued ...
 * Added support for Mac OS X notification center via terminal-notifier.app
 * updated icon
 * bundled up terminal-notifier for branding notification messages
+
+## next ##
+* added flag to disable build
+* split configuration in separate files for user and build data
 
 
 

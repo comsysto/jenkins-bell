@@ -55,17 +55,27 @@ private void updateBuildsMenuContribution() {
 
     def createOpenAction = {url -> onAModule.openInBrowser(url)}
 
-    def createBuildMap = {build ->
-        def label = build.stateSuccess ? "$build.name" : "!> $build.name (${build.buildState})"
-
+    def createBuildMap = {Build build ->
+        def label = "$build.name"
+        if (!build.stateSuccess){
+            label = "!> $build.name (${build.buildState})"
+        }
+        if (build.ignored){
+            label = "#> $build.name"
+        }
         def subMenu = [
                 "Go to Last Build": {-> createOpenAction("http://$build.server/job/$build.job/lastBuild")},
                 "Go to Job": {-> createOpenAction("http://$build.server/job/$build.job")},
                 "Start Build": {->
                     onAModule.startJob(build)
-
                 }
         ]
+
+        if (build.ignored){
+            subMenu += [ enable: { -> ignoreBuild(build, false)} ]
+        } else {
+            subMenu += [ disable: { -> ignoreBuild(build, true)} ]
+        }
 
         [(label): subMenu]
     }
@@ -107,18 +117,7 @@ private void initBuilds() {
             def groups = (it.groups?:"").split("[,;: ]").findAll {it?.trim()}
 
             def build = new Build(name: it.name, job: it.job, server: it.server, groups: groups)
-            onAModule.stateFile(build).ifSome {
-                def text = it.text.trim()
-                def states = text?.split(":")
-                if (states){
-                    if(states[0]){
-                        build.buildState = BuildState.forName(states[0])
-                    }
-                    if(states.size() > 1 && states[1]){
-                        build.lastBuildState = BuildState.forName(states[1])
-                    }
-                }
-            }
+            readStateFile(build)
             build
         }
     }
@@ -180,20 +179,45 @@ Option<File> stateFile(Build build) {
 
 
 def void pollBuild(Build build) {
+    if (build.ignored) return;
+
     onAModule.updateBuild(build)
 
     if (build.stateChanged || build.buildingChanged) {
         println("STATE CHANGE: $build.name $build.stateDescriptionWithColor [stateChanged: $build.stateChanged, buildingChanged: $build.buildingChanged]")
-
-        onAModule.stateFile(build).ifSome {
-            it.text = (build.buildState?.name()?:"") + ":" + (build.lastBuildState?.name()?:"")
-        }
         withCatch {-> onEachModule.onBuildStateChanged(build)}
     }
 
 }
 
+void writeStateFile(Build build){
+    onAModule.stateFile(build).ifSome {
+        it.text = (build.buildState?.name()?:"") + ":" + (build.lastBuildState?.name()?:"") + ":" + build.ignored
+    }
+}
+
+void readStateFile(Build build){
+    onAModule.stateFile(build).ifSome {
+        def text = it.text.trim()
+        def states = text?.split(":")
+        if (states){
+            if(states[0]){
+                build.buildState = BuildState.forName(states[0])
+            }
+            if(states.size() > 1 && states[1]){
+                build.lastBuildState = BuildState.forName(states[1])
+            }
+            if(states.size() > 2 && states[2]){
+                build.ignored = Boolean.parseBoolean(states[2])
+            }
+        }
+    }
+}
+
+
+
 void onBuildStateChanged(Build build){
+    writeStateFile(build)
     updateBuildsMenuContribution()
 }
 
@@ -211,9 +235,9 @@ Option<BuildState> getHighestBuildState() {
     builds.map { Option.option(it.max {build -> build.buildState}?.buildState)}.flatten()
 }
 
-void readConfigElement(slurper, config) {
-    config.pollIntervalMillis = (slurper?.pollIntervalMillis ?: "60000").toInteger()
-    config.buildConfigs = (slurper?.builds?.build?:[]).collect{ build ->
+void readConfigElement(slurpers, config) {
+    config.pollIntervalMillis = (slurpers?.user?.pollIntervalMillis ?: "60000").toInteger()
+    config.buildConfigs = (slurpers?.build?.builds?.build?:[]).collect{ build ->
         [
                 name: build.name.text(),
                 server: build.server.text(),
@@ -223,11 +247,12 @@ void readConfigElement(slurper, config) {
     }
 }
 
-void writeConfigElement(builder, config) {
-    builder.pollIntervalMillis config.pollIntervalMillis
-    builder.builds{
+void writeConfigElement(builders, config) {
+    builders?.user?.pollIntervalMillis config?.pollIntervalMillis
+    def configBuilder = builders?.build
+    configBuilder?.builds {
         (config.buildConfigs?:[]).each {build ->
-            builder.build{
+            configBuilder.build{
                 name build.name
                 server build.server
                 job build.job
@@ -235,6 +260,15 @@ void writeConfigElement(builder, config) {
             }
         }
     }
+}
+
+void ignoreBuild(Build build, ignored){
+    build.ignored = ignored
+    if (ignored){
+        build.lastBuildState = build.buildState
+        build.buildState = BuildState.FETCH_ERROR
+    }
+    withCatch {-> onEachModule.onBuildStateChanged(build)}
 }
 
 Option<List<JPanel>> configElementPanel(config) {

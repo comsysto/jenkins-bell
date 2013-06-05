@@ -158,14 +158,14 @@ private void openPopupWindow(Build build) {
     onAModule.requestForeground()
 }
 
-void readConfigElement(slurper, config) {
-    config.popupEnabled = (slurper?.popupEnabled ?: "true").toBoolean()
-    config.afterLoseFocusClosePopup = (slurper?.afterLoseFocusClosePopup ?: "true").toBoolean()
+void readConfigElement(slurpers, config) {
+    config.popupEnabled = (slurpers?.user?.popupEnabled ?: "true").toBoolean()
+    config.afterLoseFocusClosePopup = (slurpers?.user?.afterLoseFocusClosePopup ?: "true").toBoolean()
 }
 
-void writeConfigElement(builder, config) {
-    builder.popupEnabled config.popupEnabled
-    builder.afterLoseFocusClosePopup config.afterLoseFocusClosePopup
+void writeConfigElement(builders, config) {
+    builders?.user?.popupEnabled config.popupEnabled
+    builders?.user?.afterLoseFocusClosePopup config.afterLoseFocusClosePopup
 }
 
 Option<List<JPanel>> configElementPanel(config) {
