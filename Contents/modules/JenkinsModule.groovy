@@ -8,7 +8,7 @@ void startBuild(build) {
 }
 
 void startJob(build) {
-    loadJenkinsUrl("http://$build.server/job/$build.job/build")
+    loadJenkinsUrl("$build.server/job/$build.job/build")
 }
 
 String loadJenkinsUrl(urlString){
@@ -30,7 +30,7 @@ String loadJenkinsUrl(urlString){
 
 void updateBuild(build) {
 
-    def url = "http://${build.server}/job/${build.job}/lastBuild/api/json"
+    def url = "${build.server}/job/${build.job}/lastBuild/api/json"
     def jsonText
     try {
         jsonText = loadJenkinsUrl(url)

@@ -1,12 +1,14 @@
 // monitor
 
 
+import groovy.swing.SwingBuilder
 import groovy.transform.Field
 
+import javax.swing.*
+import java.awt.*
+import java.util.List
+
 import static Option.none
-import javax.swing.JPanel
-import groovy.swing.SwingBuilder
-import java.awt.BorderLayout
 
 @Field
 Object loopLock = new Object()
@@ -26,7 +28,7 @@ Map<String, Closure> menu = [:]
 @Field
 Option menuContribution = none()
 
-void start(){
+void start() {
     menuContribution = onAModule.contributeToMenu(menu)
 }
 
@@ -43,7 +45,7 @@ void monitor() {
 
         while (!isStopped) {
             poll()
-            loopLock.wait(onAModule.getConfig().defaultOrMap(60000) {it.pollIntervalMillis})
+            loopLock.wait(onAModule.getConfig().defaultOrMap(60000) { it.pollIntervalMillis })
         }
         isLooping = false
         loopLock.notifyAll()
@@ -53,28 +55,28 @@ void monitor() {
 
 private void updateBuildsMenuContribution() {
 
-    def createOpenAction = {url -> onAModule.openInBrowser(url)}
+    def createOpenAction = { url -> onAModule.openInBrowser(url) }
 
-    def createBuildMap = {Build build ->
+    def createBuildMap = { Build build ->
         def label = "$build.name"
-        if (!build.stateSuccess){
+        if (!build.stateSuccess) {
             label = "!> $build.name (${build.buildState})"
         }
-        if (build.ignored){
+        if (build.ignored) {
             label = "#> $build.name"
         }
         def subMenu = [
-                "Go to Last Build": {-> createOpenAction("http://$build.server/job/$build.job/lastBuild")},
-                "Go to Job": {-> createOpenAction("http://$build.server/job/$build.job")},
+                "Go to Last Build": {-> createOpenAction("$build.server/job/$build.job/lastBuild") },
+                "Go to Job": {-> createOpenAction("$build.server/job/$build.job") },
                 "Start Build": {->
                     onAModule.startJob(build)
                 }
         ]
 
-        if (build.ignored){
-            subMenu += [ enable: { -> ignoreBuild(build, false)} ]
+        if (build.ignored) {
+            subMenu += [enable: {-> ignoreBuild(build, false) }]
         } else {
-            subMenu += [ disable: { -> ignoreBuild(build, true)} ]
+            subMenu += [disable: {-> ignoreBuild(build, true) }]
         }
 
         [(label): subMenu]
@@ -85,16 +87,16 @@ private void updateBuildsMenuContribution() {
 
         menu.clear()
         builds.ifSome {
-            def allBuilds = it.sort{it.name}
-            def groups = allBuilds.collect {it.groups}.flatten().unique().sort()
+            def allBuilds = it.sort { it.name }
+            def groups = allBuilds.collect { it.groups }.flatten().unique().sort()
 
-            def topLevelBuilds = allBuilds.findAll {!it.groups}.collectEntries {createBuildMap(it)}
+            def topLevelBuilds = allBuilds.findAll { !it.groups }.collectEntries { createBuildMap(it) }
             menu.putAll(topLevelBuilds)
 
             menu["seperator1"] = null
 
             groups.each { group ->
-                def groupMenus = allBuilds.findAll {group in it.groups}.collect { build ->
+                def groupMenus = allBuilds.findAll { group in it.groups }.collect { build ->
                     createBuildMap(build)
                 }
 
@@ -112,9 +114,9 @@ private void updateBuildsMenuContribution() {
 
 private void initBuilds() {
     builds = onAModule.getConfig().map { config ->
-        config.buildConfigs.findAll {it.name && it.job && it.server}.collect {
+        config.buildConfigs.findAll { it.name && it.job && it.server }.collect {
 
-            def groups = (it.groups?:"").split("[,;: ]").findAll {it?.trim()}
+            def groups = (it.groups ?: "").split("[,;: ]").findAll { it?.trim() }
 
             def build = new Build(name: it.name, job: it.job, server: it.server, groups: groups)
             readStateFile(build)
@@ -185,29 +187,29 @@ def void pollBuild(Build build) {
 
     if (build.stateChanged || build.buildingChanged) {
         println("STATE CHANGE: $build.name $build.stateDescriptionWithColor [stateChanged: $build.stateChanged, buildingChanged: $build.buildingChanged]")
-        withCatch {-> onEachModule.onBuildStateChanged(build)}
+        withCatch {-> onEachModule.onBuildStateChanged(build) }
     }
 
 }
 
-void writeStateFile(Build build){
+void writeStateFile(Build build) {
     onAModule.stateFile(build).ifSome {
-        it.text = (build.buildState?.name()?:"") + ":" + (build.lastBuildState?.name()?:"") + ":" + build.ignored
+        it.text = (build.buildState?.name() ?: "") + ":" + (build.lastBuildState?.name() ?: "") + ":" + build.ignored
     }
 }
 
-void readStateFile(Build build){
+void readStateFile(Build build) {
     onAModule.stateFile(build).ifSome {
         def text = it.text.trim()
         def states = text?.split(":")
-        if (states){
-            if(states[0]){
+        if (states) {
+            if (states[0]) {
                 build.buildState = BuildState.forName(states[0])
             }
-            if(states.size() > 1 && states[1]){
+            if (states.size() > 1 && states[1]) {
                 build.lastBuildState = BuildState.forName(states[1])
             }
-            if(states.size() > 2 && states[2]){
+            if (states.size() > 2 && states[2]) {
                 build.ignored = Boolean.parseBoolean(states[2])
             }
         }
@@ -216,7 +218,7 @@ void readStateFile(Build build){
 
 
 
-void onBuildStateChanged(Build build){
+void onBuildStateChanged(Build build) {
     writeStateFile(build)
     updateBuildsMenuContribution()
 }
@@ -227,48 +229,54 @@ synchronized Option<List<Build>> getBuilds() {
 
 Option<Map<BuildState, Integer>> getBuildStateCount() {
     builds.map {
-        it.countBy {it.buildState}
+        it.countBy { it.buildState }
     }
 }
 
 Option<BuildState> getHighestBuildState() {
-    builds.map { Option.option(it.max {build -> build.buildState}?.buildState)}.flatten()
+    builds.map { Option.option(it.max { build -> build.buildState }?.buildState) }.flatten()
 }
 
 void readConfigElement(slurpers, config) {
     config.pollIntervalMillis = (slurpers?.user?.pollIntervalMillis ?: "60000").toInteger()
-    config.buildConfigs = (slurpers?.build?.builds?.build?:[]).collect{ build ->
+    config.buildConfigs = (slurpers?.build?.builds?.build ?: []).collect { build ->
         [
                 name: build.name.text(),
-                server: build.server.text(),
-                job:  build.job.text(),
+                server: normalizeServer(build.server.text()),
+                job: build.job.text(),
                 groups: build.groups.text()
         ]
     }
+}
+
+String normalizeServer(String server){
+    //BUG #5: optional specify protocol.
+    def serverAndProtocol = server.contains("://") ? server : "http://${server}";
+    return serverAndProtocol;
 }
 
 void writeConfigElement(builders, config) {
     builders?.user?.pollIntervalMillis config?.pollIntervalMillis
     def configBuilder = builders?.build
     configBuilder?.builds {
-        (config.buildConfigs?:[]).each {build ->
-            configBuilder.build{
+        (config.buildConfigs ?: []).each { build ->
+            configBuilder.build {
                 name build.name
                 server build.server
                 job build.job
-                groups build.groups?:""
+                groups build.groups ?: ""
             }
         }
     }
 }
 
-void ignoreBuild(Build build, ignored){
+void ignoreBuild(Build build, ignored) {
     build.ignored = ignored
-    if (ignored){
+    if (ignored) {
         build.lastBuildState = build.buildState
         build.buildState = BuildState.FETCH_ERROR
     }
-    withCatch {-> onEachModule.onBuildStateChanged(build)}
+    withCatch {-> onEachModule.onBuildStateChanged(build) }
 }
 
 Option<List<JPanel>> configElementPanel(config) {
@@ -291,13 +299,13 @@ Option<List<JPanel>> configElementPanel(config) {
 
                         panel(constraints: BorderLayout.SOUTH) {
                             gridLayout(rows: 1, columns: 2)
-                            button(text: "add", actionPerformed: {e ->
+                            button(text: "add", actionPerformed: { e ->
                                 config.buildConfigs.add([name: "", server: "", job: "", groups: ""])
                                 builder.buildConfigTable.model.fireTableDataChanged()
                                 def index = config.buildConfigs.size() - 1
                                 builder.buildConfigTable.selectionModel.setSelectionInterval(index, index)
                             })
-                            button(text: "remove", actionPerformed: {e ->
+                            button(text: "remove", actionPerformed: { e ->
                                 config.buildConfigs.remove(builder.buildConfigTable.selectionModel.leadSelectionIndex)
                                 builder.buildConfigTable.model.fireTableDataChanged()
                             })
@@ -306,7 +314,7 @@ Option<List<JPanel>> configElementPanel(config) {
                     builder.panel() {
                         borderLayout()
                         label(text: "pollIntervalMillis", constraints: BorderLayout.WEST)
-                        spinner(value: config.pollIntervalMillis, stateChanged: {e -> config.pollIntervalMillis = e.source.value})
+                        spinner(value: config.pollIntervalMillis, stateChanged: { e -> config.pollIntervalMillis = e.source.value })
                     }
             ]
     )

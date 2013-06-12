@@ -28,7 +28,7 @@ void onBuildStateChanged(Build build) {
                 "-group", "$build.name",
                 "-subtitle", "${build.buildState}",
                 "-message", "Changed state to ${build.buildState} from ${build.lastBuildState}",
-                "-open", "http://$build.server/job/$build.job/lastBuild"
+                "-open", "$build.server/job/$build.job/lastBuild"
         ]
         println("--Notifier Command:\n$command")
         command.execute()
