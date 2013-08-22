@@ -262,7 +262,7 @@ to be continued ...
 * Job groups
 * Start builds
 
-## v0.2.0 ##
+## v0.3.0 ##
 * Fixed window location for linux
 * Fixed lots of bugs
 * Support start build on secured jenkins
