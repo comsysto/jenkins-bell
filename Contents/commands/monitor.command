@@ -13,3 +13,4 @@ SpeechModule
 TrayModule
 JenkinsModule
 NotificationCenterModule
+ClewareTrafficLight

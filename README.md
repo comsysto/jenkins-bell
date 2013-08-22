@@ -262,7 +262,7 @@ to be continued ...
 * Job groups
 * Start builds
 
-## master ##
+## v0.2.0 ##
 * Fixed window location for linux
 * Fixed lots of bugs
 * Support start build on secured jenkins
@@ -272,7 +272,8 @@ to be continued ...
 * added flag to disable build
 * split configuration in separate files for user and build data
 
-
+## master ##
+* added support for cleware usb traffic light through [build-light](https://github.com/comsysto/build-light)
 
 
 

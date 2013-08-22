@@ -274,7 +274,7 @@ void ignoreBuild(Build build, ignored) {
     build.ignored = ignored
     if (ignored) {
         build.lastBuildState = build.buildState
-        build.buildState = BuildState.FETCH_ERROR
+        build.buildState = BuildState.IGNORED
     }
     withCatch {-> onEachModule.onBuildStateChanged(build) }
 }

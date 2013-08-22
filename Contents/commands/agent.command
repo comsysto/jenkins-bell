@@ -6,3 +6,4 @@ LogModule
 ReportModule
 SpeechModule
 JenkinsModule
+ClewareTrafficLight
