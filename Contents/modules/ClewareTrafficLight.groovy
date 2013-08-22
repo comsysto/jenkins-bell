@@ -45,8 +45,8 @@ void updateTrafficLight(BuildState state, config){
 }
 
 void readConfigElement(slurpers, config) {
-    config.trafficLightEnabled = (slurpers?.user?.trafficLightEnabled ?: "true").toBoolean()
-    config.trafficLightPath = slurpers?.user?.trafficLightPath?:""
+    config.trafficLightEnabled = (slurpers?.user?.trafficLightEnabled?.text()?: "true").toBoolean()
+    config.trafficLightPath = slurpers?.user?.trafficLightPath?.text()?:""
 }
 
 void writeConfigElement(builders, config) {

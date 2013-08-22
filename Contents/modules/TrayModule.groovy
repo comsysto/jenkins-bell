@@ -63,7 +63,7 @@ void onStopMonitoring() {
 }
 
 void readConfigElement(slurpers, config){
-   config.trayEnabled = (slurpers?.user?.trayEnabled?:"true").toBoolean()
+   config.trayEnabled = (slurpers?.user?.trayEnabled?.text()?:"true").toBoolean()
 }
 
 void writeConfigElement(builders, config){

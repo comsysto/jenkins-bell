@@ -36,7 +36,7 @@ void onBuildStateChanged(Build build) {
 }
 
 void readConfigElement(slurpers, config) {
-    config.notificationCenterEnabled = (slurpers?.user?.notificationCenterEnabled ?: "false").toBoolean()
+    config.notificationCenterEnabled = (slurpers?.user?.notificationCenterEnabled?.text()?: "false").toBoolean()
 }
 
 void writeConfigElement(builders, config) {

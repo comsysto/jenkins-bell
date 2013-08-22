@@ -15,8 +15,9 @@ String loadJenkinsUrl(urlString){
     def url = new URL(urlString)
     def urlConnection = url.openConnection()
     onAModule.getConfig().ifSome { config ->
-        if (config.authToken && config.authName)
+        if (!config.authToken.trim().isEmpty() && !config.authName.trim().isEmpty()){
             urlConnection.setRequestProperty("Authorization", "Basic " + "$config.authName:$config.authToken".getBytes("UTF-8").encodeBase64());
+        }
     }
     def stream = urlConnection.getInputStream()
     try {
@@ -65,8 +66,8 @@ void updateBuild(build) {
 }
 
 void readConfigElement(slurpers, config) {
-    config.authToken = slurpers?.user?.authToken
-    config.authName = slurpers?.user?.authName
+    config.authToken = slurpers?.user?.authToken?.text()?:"";
+    config.authName = slurpers?.user?.authName?.text()?:"";
 }
 
 void writeConfigElement(builders, config) {
